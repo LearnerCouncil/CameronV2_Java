@@ -5,11 +5,13 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rocks.learnercouncil.commands.PingCommand;
 import rocks.learnercouncil.commands.RequestCommand;
 import rocks.learnercouncil.commands.RpsCommand;
+import rocks.learnercouncil.commands.SayCommand;
 import rocks.learnercouncil.events.EditEvent;
 import rocks.learnercouncil.events.MessageEvent;
 import rocks.learnercouncil.events.ReactEvent;
@@ -31,10 +33,12 @@ public class Cameron {
                         new PingCommand(),
                         new RequestCommand(),
                         new RpsCommand(),
+                        new SayCommand(),
                         //
                         new EditEvent(),
                         new MessageEvent(),
-                        new ReactEvent()
+                        new ReactEvent()/*,
+                        new DeleteEvent()*/
                 )
                 .build().awaitReady();
 
@@ -48,6 +52,7 @@ public class Cameron {
             guild.upsertCommand("ping", "Ping Pong!").queue();
             guild.upsertCommand("request", "Request Access to the server").queue();
             guild.upsertCommand("rps", "Play 'Rock, Paper, Scissors' with Cameron").queue();
+            guild.upsertCommand("say", "Make cameron say something").addOption(OptionType.STRING, "message", "The thing to Cameron will say", true).setDefaultEnabled(false).queue();
         }
     }
 

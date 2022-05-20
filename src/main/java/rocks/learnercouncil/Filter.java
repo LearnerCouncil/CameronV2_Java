@@ -79,7 +79,7 @@ public class Filter {
                 .build()
         ).queue();
         user.openPrivateChannel().flatMap(c -> c.sendMessageEmbeds(new EmbedBuilder()
-                .setAuthor(member.getNickname() == null ? user.getName() : member.getNickname(), user.getEffectiveAvatarUrl())
+                .setAuthor(member.getNickname() == null ? user.getName() : member.getNickname(), null,  user.getEffectiveAvatarUrl())
                 .setTitle("Whoa! That's not allowed here at" + message.getGuild().getName() + "!")
                 .setColor(Color.RED)
                 .setDescription("We have been notified of your actions. Do not do it again.")

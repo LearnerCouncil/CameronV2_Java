@@ -42,7 +42,7 @@ public class RpsCommand extends ListenerAdapter {
                 case "rps_scissors" -> userChoice = 2;
                 default -> userChoice = 10;
             }
-            event.editMessageEmbeds(evalutateAnswers(userChoice, cpuChoice, event.getJDA())).setActionRows().queue();
+            event.editMessageEmbeds(evaluateAnswers(userChoice, cpuChoice, event.getJDA())).setActionRows().queue();
         }
 
         //user-cpu
@@ -51,7 +51,7 @@ public class RpsCommand extends ListenerAdapter {
         //1 -1  0  1
         //2 -2 -1  0
     }
-    private MessageEmbed evalutateAnswers(byte u, byte c, JDA jda) {
+    private MessageEmbed evaluateAnswers(byte u, byte c, JDA jda) {
         byte e = (byte) (u-c);
         String userChoice = switch (u) {
             case 0 -> "\uD83D\uDDFB";
