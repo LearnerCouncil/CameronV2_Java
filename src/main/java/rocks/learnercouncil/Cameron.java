@@ -4,8 +4,10 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rocks.learnercouncil.commands.PingCommand;
@@ -37,9 +39,10 @@ public class Cameron {
                         //
                         new EditEvent(),
                         new MessageEvent(),
-                        new ReactEvent()/*,
-                        new DeleteEvent()*/
+                        new ReactEvent(),
+                        new MessageCache()
                 )
+                .enableIntents(GatewayIntent.GUILD_MESSAGE_REACTIONS)
                 .build().awaitReady();
 
         Filter.initializeLists(jda);
