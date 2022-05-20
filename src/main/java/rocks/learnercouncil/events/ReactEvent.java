@@ -8,6 +8,5 @@ public class ReactEvent extends ListenerAdapter {
 
     @Override
     public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
-        super.onMessageReactionAdd(event);
     }
 }

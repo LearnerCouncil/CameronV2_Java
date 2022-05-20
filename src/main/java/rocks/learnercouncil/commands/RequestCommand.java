@@ -144,7 +144,7 @@ public class RequestCommand extends ListenerAdapter {
                                             case "Parent" -> "Child's name(s): ";
                                             default -> "Unknown: ";
                                         }, answer_4, false))
-                                        .setFooter(user.getName(), user.getAvatarUrl()).build()
+                                        .setFooter(user.getName(), user.getEffectiveAvatarUrl()).build()
                         ).queue(m -> m.delete().queueAfter(120, TimeUnit.SECONDS, m2 -> questionNumber = -1));
                 }
             }

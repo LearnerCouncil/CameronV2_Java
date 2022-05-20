@@ -4,7 +4,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rocks.learnercouncil.commands.PingCommand;
@@ -18,13 +18,14 @@ import javax.security.auth.login.LoginException;
 
 public class Cameron {
 
-
+    private static JDA jda;
+    public static Logger logger = LoggerFactory.getLogger("rocks.learnercouncil.Cameron");
 
     public static void main(String[] args) throws LoginException, InterruptedException {
-        Logger logger = LoggerFactory.getLogger("rocks.learnercouncil.Cameron");
+
         logger.debug("Starting bot...");
 
-        JDA jda = JDABuilder.createDefault(args[0])
+        jda = JDABuilder.createDefault(args[0])
                 .setActivity(Activity.watching("over you learners!"))
                 .addEventListeners(
                         new PingCommand(),
@@ -48,5 +49,14 @@ public class Cameron {
             guild.upsertCommand("request", "Request Access to the server").queue();
             guild.upsertCommand("rps", "Play 'Rock, Paper, Scissors' with Cameron").queue();
         }
+    }
+
+    public static TextChannel getChannel(String channel) {
+        try {
+            return jda.getTextChannelsByName(channel, true).get(0);
+        } catch (IndexOutOfBoundsException e) {
+            logger.error("Channel '" + channel + "' is null.");
+        }
+        throw new NullPointerException();
     }
 }
