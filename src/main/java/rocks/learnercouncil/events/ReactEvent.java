@@ -47,7 +47,7 @@ public class ReactEvent extends ListenerAdapter {
                 StringBuilder reactions = new StringBuilder();
                 m.getReactions().forEach(r -> reactions.append(r.getReactionEmote().getEmoji()).append(" "));
                 String link = "https://www.discord.com/channels/" + m.getGuild().getId() + "/" + m.getChannel().getId() + "/" + m.getId();
-                Cameron.getChannel("kinda-sus-log").sendMessageEmbeds(new EmbedBuilder()
+                Cameron.getExistingChannel("kinda-sus-log").sendMessageEmbeds(new EmbedBuilder()
                         .setColor(Color.YELLOW)
                         .setAuthor("Suspicious sequence of reactions on " + m.getAuthor().getAsTag() + " message")
                         .setDescription("Do what you want with this information.")

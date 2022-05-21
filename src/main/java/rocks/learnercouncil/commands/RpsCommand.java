@@ -44,12 +44,6 @@ public class RpsCommand extends ListenerAdapter {
             }
             event.editMessageEmbeds(evaluateAnswers(userChoice, cpuChoice, event.getJDA())).setActionRows().queue();
         }
-
-        //user-cpu
-        //   0  1  2
-        //0  0  1  2
-        //1 -1  0  1
-        //2 -2 -1  0
     }
     private MessageEmbed evaluateAnswers(byte u, byte c, JDA jda) {
         byte e = (byte) (u-c);

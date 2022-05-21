@@ -5,8 +5,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 
 import java.awt.*;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Filter {
@@ -14,23 +12,42 @@ public class Filter {
     public static Set<String> word_blacklist = new HashSet<>();
     public static Set<String> word_whitelist = new HashSet<>();
 
-    public static void initializeLists(JDA jda) {
-        for(Message msg : jda.getTextChannelsByName("word-blacklist", false).get(0).getIterableHistory())
+    /**
+     * Initializes the word whitelist/blacklist from their respective channels
+     */
+    public static void initializeLists() {
+        for(Message msg : Cameron.getExistingChannel("word-blacklist").getIterableHistory())
             word_blacklist.addAll(Arrays.asList(msg.getContentStripped().split("\n")));
-        for(Message msg : jda.getTextChannelsByName("word-whitelist", false).get(0).getIterableHistory())
+        for(Message msg : Cameron.getExistingChannel("word-whitelist").getIterableHistory())
             word_whitelist.addAll(Arrays.asList(msg.getContentStripped().split("\n")));
     }
 
+    /**
+     * Adds a new entry to the whitelist/blacklist.
+     * @param whitelist Whether it's updating the whitelist or blacklist. true = whitelist, false = blacklist;
+     * @param e the entry to add to the list.
+     */
     public static void updateList(boolean whitelist, String e) {
         if(whitelist)
             word_whitelist.add(e);
         word_blacklist.add(e);
     }
+    /**
+     * Adds a list of new entries to the whitelist/blacklist.
+     * @param whitelist Whether it's updating the whitelist or blacklist. true = whitelist, false = blacklist;
+     * @param e the entry to add to the list.
+     */
     public static void updateList(boolean whitelist, Collection<String> e) {
         if(whitelist)
             word_whitelist.addAll(e);
         word_blacklist.addAll(e);
     }
+
+    /**
+     * Checks if a certain string is unsafe, and should be deleted.
+     * @param e The string to check.
+     * @return True if it contains a word that's in the blacklist, but not the whitelist.
+     */
     public static boolean isUnsafe(String e) {
         String[] msg = e.split(" ");
         for(String s : msg) {
@@ -50,15 +67,15 @@ public class Filter {
         return false;
     }
 
-    public static boolean isSafe(Collection<String> e) {
-        for(String s : e)
-            if(isUnsafe(s)) return false;
-        return true;
-    }
-
-    public static void deleteMessage(Member member, User user, Message message, Channel channel) {
-        Cameron.getChannel("inappropriate-log").sendMessageEmbeds(new EmbedBuilder()
-                .setAuthor(member.getNickname() == null ? user.getName() + " said something bad!" : member.getNickname() + " said something bad!")
+    /**
+     * Deteltes a message, logs it to the inappropriate log, and DMs the user.
+     * @param member The person that sent the mesage, but as a 'net.dv8tion.jda.api.entities.Member' as to access things like the nickname.
+     * @param user The person that sent the message, but as a 'net.dv8tion.jda.api.entities.User' as to access things like username.
+     * @param message The message to delete.
+     */
+    public static void deleteMessage(Member member, User user, Message message) {
+        Cameron.getExistingChannel("inappropriate-log").sendMessageEmbeds(new EmbedBuilder()
+                .setAuthor(member.getEffectiveName() + " said something bad!")
                 .setColor(Color.ORANGE)
                 .setDescription("Do what you want with this information")
                 .addField(new MessageEmbed.Field("User Information",
@@ -74,12 +91,12 @@ public class Filter {
                         "> **Users Message:**\n" +
                                 message.getContentDisplay() +
                                 "\n> **Channel:**\n" +
-                                channel.getAsMention(),false))
-                .setFooter(DateTimeFormatter.ofPattern("MM/dd/yyyy").format(LocalDate.now()))
+                                message.getChannel().getAsMention(),false))
+                .setTimestamp(Cameron.CURRENT_DATE)
                 .build()
         ).queue();
         user.openPrivateChannel().flatMap(c -> c.sendMessageEmbeds(new EmbedBuilder()
-                .setAuthor(member.getNickname() == null ? user.getName() : member.getNickname(), null,  user.getEffectiveAvatarUrl())
+                .setAuthor(member.getEffectiveName(), null,  member.getEffectiveAvatarUrl())
                 .setTitle("Whoa! That's not allowed here at" + message.getGuild().getName() + "!")
                 .setColor(Color.RED)
                 .setDescription("We have been notified of your actions. Do not do it again.")

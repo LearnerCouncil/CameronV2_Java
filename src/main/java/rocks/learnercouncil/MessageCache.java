@@ -1,7 +1,5 @@
 package rocks.learnercouncil;
-/*
-Cache function by https://gist.github.com/Almighty-Alpaca
- */
+
 
 
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -15,12 +13,13 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+/**
+ * Message cacheing function by https://gist.github.com/Almighty-Alpaca
+ */
 public class MessageCache extends ListenerAdapter
 {
 
@@ -46,13 +45,13 @@ public class MessageCache extends ListenerAdapter
     public void onMessageDelete(@NotNull MessageDeleteEvent event) {
         if(this.messageMap.containsKey(event.getMessageId())) {
             Message message = getMessage(event.getMessageId());
-            Cameron.getChannel("delete-log").sendMessageEmbeds(new EmbedBuilder()
-                    .setColor(Color.YELLOW)
-                    .setAuthor(message.getAuthor().getAsTag() + " message got deleted")
-                    .addField(new MessageEmbed.Field("Message:", message.getContentDisplay(), false))
-                    .setFooter(DateTimeFormatter.ofPattern("MM/dd/yyyy").format(LocalDate.now()))
-                    .build()
-            ).queue();
+                Cameron.getExistingChannel("delete-log").sendMessageEmbeds(new EmbedBuilder()
+                        .setColor(Color.YELLOW)
+                        .setAuthor(message.getAuthor().getAsTag() + " message got deleted")
+                        .addField(new MessageEmbed.Field("Message:", message.getContentDisplay(), false))
+                        .setTimestamp(Cameron.CURRENT_DATE)
+                        .build()
+                ).queue();
         }
         this.messageMap.remove(event.getMessageId());
     }
@@ -61,11 +60,11 @@ public class MessageCache extends ListenerAdapter
         event.getMessageIds().forEach(i -> {
             if(this.messageMap.containsKey(i)) {
                 Message message = getMessage(i);
-                Cameron.getChannel("delete-log").sendMessageEmbeds(new EmbedBuilder()
+                Cameron.getExistingChannel("delete-log").sendMessageEmbeds(new EmbedBuilder()
                         .setColor(Color.YELLOW)
                         .setAuthor(message.getAuthor().getAsTag() + " message got deleted")
                         .addField(new MessageEmbed.Field("Message:", message.getContentDisplay(), false))
-                        .setFooter(DateTimeFormatter.ofPattern("MM/dd/yyyy").format(LocalDate.now()))
+                        .setTimestamp(Cameron.CURRENT_DATE)
                         .build()
                 ).queue();
             }
@@ -75,12 +74,12 @@ public class MessageCache extends ListenerAdapter
     @Override
     public void onMessageUpdate(@NotNull MessageUpdateEvent event) {
         if(this.messageMap.containsKey(event.getMessageId())) {
-            Cameron.getChannel("edit-log").sendMessageEmbeds(new EmbedBuilder()
+            Cameron.getExistingChannel("edit-log").sendMessageEmbeds(new EmbedBuilder()
                     .setColor(Color.YELLOW)
                     .setAuthor(getMessage(event.getMessageId()).getAuthor().getAsTag() + " message got edited")
                     .addField(new MessageEmbed.Field("Original Message:", getMessage(event.getMessageId()).getContentDisplay(), false))
                     .addField(new MessageEmbed.Field("New Message:", event.getMessage().getContentDisplay(), false))
-                    .setFooter(DateTimeFormatter.ofPattern("MM/dd/yyyy").format(LocalDate.now()))
+                    .setTimestamp(Cameron.CURRENT_DATE)
                     .build()
             ).queue();
         }

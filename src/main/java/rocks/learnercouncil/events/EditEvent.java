@@ -19,7 +19,7 @@ public class EditEvent extends ListenerAdapter {
         Channel channel = event.getChannel();
         if (!event.getMember().hasPermission(Permission.VIEW_AUDIT_LOGS)) {
             if (Filter.isUnsafe(message.getContentStripped())) {
-                Filter.deleteMessage(member, user, message, channel);
+                Filter.deleteMessage(member, user, message);
             }
         }
     }
