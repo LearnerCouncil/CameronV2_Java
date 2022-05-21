@@ -13,7 +13,9 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.time.LocalDate;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -24,10 +26,13 @@ public class MessageCache extends ListenerAdapter
 {
 
     private final Map<String, Message> messageMap;
+    //Amount of messages the cache can hold before it starts deleting old ones;
+    private final int THRESHOLD = 4096;
 
     public MessageCache()
     {
-        this.messageMap = Collections.synchronizedMap(new WeakHashMap<>());
+        this.messageMap = Collections.synchronizedMap(new LinkedHashMap<>());
+        Cameron.logger.info("HashMap initialized");
     }
 
     public Message getMessage(final String Id)
@@ -40,16 +45,23 @@ public class MessageCache extends ListenerAdapter
         final Message message = event.getMessage();
         if(message.getAuthor().isBot()) return;
         this.messageMap.put(message.getId(), message);
+        Cameron.logger.info("Message '" + message + "' added, Size: " + messageMap.size());
+        if(messageMap.size() > THRESHOLD) {
+            messageMap.remove(messageMap.keySet().stream().findFirst().get());
+            Cameron.logger.info("Threshold reached, voiding " + messageMap.get(messageMap.keySet().stream().findFirst().get()));
+        }
     }
     @Override
     public void onMessageDelete(@NotNull MessageDeleteEvent event) {
+        Cameron.logger.info("a message has been deleted");
         if(this.messageMap.containsKey(event.getMessageId())) {
+            Cameron.logger.info("Map contains key");
             Message message = getMessage(event.getMessageId());
                 Cameron.getExistingChannel("delete-log").sendMessageEmbeds(new EmbedBuilder()
                         .setColor(Color.YELLOW)
                         .setAuthor(message.getAuthor().getAsTag() + " message got deleted")
                         .addField(new MessageEmbed.Field("Message:", message.getContentDisplay(), false))
-                        .setTimestamp(Cameron.CURRENT_DATE)
+                        .setFooter(Cameron.CURRENT_DATE)
                         .build()
                 ).queue();
         }
@@ -64,7 +76,7 @@ public class MessageCache extends ListenerAdapter
                         .setColor(Color.YELLOW)
                         .setAuthor(message.getAuthor().getAsTag() + " message got deleted")
                         .addField(new MessageEmbed.Field("Message:", message.getContentDisplay(), false))
-                        .setTimestamp(Cameron.CURRENT_DATE)
+                        .setTimestamp(LocalDate.now())
                         .build()
                 ).queue();
             }
@@ -79,7 +91,7 @@ public class MessageCache extends ListenerAdapter
                     .setAuthor(getMessage(event.getMessageId()).getAuthor().getAsTag() + " message got edited")
                     .addField(new MessageEmbed.Field("Original Message:", getMessage(event.getMessageId()).getContentDisplay(), false))
                     .addField(new MessageEmbed.Field("New Message:", event.getMessage().getContentDisplay(), false))
-                    .setTimestamp(Cameron.CURRENT_DATE)
+                    .setFooter(Cameron.CURRENT_DATE)
                     .build()
             ).queue();
         }

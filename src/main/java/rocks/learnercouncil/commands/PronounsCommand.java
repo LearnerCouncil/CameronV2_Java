@@ -12,9 +12,13 @@ import java.util.List;
 
 public class PronounsCommand extends ListenerAdapter {
 
-    private final String PREFIX = "!";
-    private final List<Role> pronounRoles = new ArrayList<>();
+    private static final String PREFIX = "!";
+    private static final List<Role> pronounRoles = new ArrayList<>();
     public PronounsCommand() {
+
+    }
+
+    public static void initializeRoles() {
         Guild guild = Cameron.getJDA().getGuildById(Cameron.GUILD_ID);
         if(guild != null)
             guild.getRoles().stream().filter(r -> r.getName().startsWith(PREFIX)).forEach(pronounRoles::add);

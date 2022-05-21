@@ -18,7 +18,7 @@ public class JoinEvent extends ListenerAdapter {
                 .setAuthor(m.getEffectiveName(), "", m.getEffectiveAvatarUrl())
                 .setTitle(m.getEffectiveName() + "Joined the server")
                 .setDescription("And now we wait...")
-                .setTimestamp(Cameron.CURRENT_DATE)
+                .setFooter(Cameron.CURRENT_DATE)
                 .build()
         ).queue();
     }

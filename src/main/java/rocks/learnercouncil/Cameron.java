@@ -24,7 +24,7 @@ public class Cameron {
 
     //Current guild (Server) ID, currently set to my test server, but must be changed on release to the Learner Server's.
     public static final String GUILD_ID = "976524936426442753";
-    public static final TemporalAccessor CURRENT_DATE = LocalDate.now();
+    public static final String CURRENT_DATE = (DateTimeFormatter.ofPattern("MM/dd/yyyy").format(LocalDate.now()));
 
     private static JDA jda;
     public static final Logger logger = LoggerFactory.getLogger("rocks.learnercouncil.Cameron");
@@ -62,6 +62,7 @@ public class Cameron {
                 ).build().awaitReady();
 
         Filter.initializeLists();
+        //PronounsCommand.initializeRoles();
 
         logger.debug("Getting guild...");
         Guild guild = jda.getGuildById(GUILD_ID);

@@ -92,7 +92,7 @@ public class Filter {
                                 message.getContentDisplay() +
                                 "\n> **Channel:**\n" +
                                 message.getChannel().getAsMention(),false))
-                .setTimestamp(Cameron.CURRENT_DATE)
+                .setFooter(Cameron.CURRENT_DATE)
                 .build()
         ).queue();
         user.openPrivateChannel().flatMap(c -> c.sendMessageEmbeds(new EmbedBuilder()
