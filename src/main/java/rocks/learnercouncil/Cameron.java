@@ -72,6 +72,7 @@ public class Cameron {
 
         if(guild != null) {
             logger.info("Guild: " + guild.getName());
+            MessageCache.initializeMessages(guild);
             //Currently guild commands but may be changed to global commands on release
             //i.e. jda.updateCommands().addCommands(...).queue();
             guild.updateCommands().addCommands(
@@ -85,6 +86,16 @@ public class Cameron {
                     new OptionData(OptionType.STRING, "message", "The thing cameron will say", true)).setDefaultEnabled(false),
             Commands.slash("pronouns", "Set your pronouns")
             ).queue();
+            guild.loadMembers().onSuccess(l -> {
+                logger.error(l.toString());
+                for(Member m : l) {
+                    Role pnListRole = Cameron.getExistingRole("----------------  Pronouns ----------------");
+                    if (m.getRoles().contains(pnListRole) || m.getUser().isBot()) continue;
+                    guild.addRoleToMember(m, pnListRole).queue();
+                    logger.error("Adding role to: " + m);
+                }
+            });
+
         }
     }
 

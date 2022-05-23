@@ -15,7 +15,7 @@ public class JoinEvent extends ListenerAdapter {
         Cameron.getExistingChannel("rr-1").sendMessage("Hello " + event.getMember().getAsMention() + "! Type **/request** to begin.").queue();
         Member m = event.getMember();
         Cameron.getExistingChannel("member-log").sendMessageEmbeds(new EmbedBuilder()
-                .setAuthor(m.getEffectiveName(), "", m.getEffectiveAvatarUrl())
+                .setAuthor(m.getEffectiveName(), null, m.getEffectiveAvatarUrl())
                 .setTitle(m.getEffectiveName() + "Joined the server")
                 .setDescription("And now we wait...")
                 .setFooter(Cameron.CURRENT_DATE)

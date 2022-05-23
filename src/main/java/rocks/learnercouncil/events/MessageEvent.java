@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 import rocks.learnercouncil.Filter;
+import rocks.learnercouncil.commands.PronounsCommand;
 
 public class MessageEvent extends ListenerAdapter {
 
@@ -17,11 +18,12 @@ public class MessageEvent extends ListenerAdapter {
         User user = event.getAuthor();
         Message message = event.getMessage();
         Channel channel = event.getChannel();
-
-        if(channel.getName().equals("blacklisted-words"))
-            Filter.updateList(false, event.getMessage().getContentStripped());
-        else if(channel.getName().equals("whitelisted-words"))
-            Filter.updateList(true, event.getMessage().getContentStripped());
+        if(channel.getName().equals("word-blacklist"))
+            Filter.updateList(false, event.getMessage().getContentStripped(), true);
+        else if(channel.getName().equals("word-whitelist"))
+            Filter.updateList(true, event.getMessage().getContentStripped(), true);
+        else if(channel.getName().equals("pronouns"))
+            PronounsCommand.addPronounRole(event.getGuild(), message.getContentStripped());
 
         if (!event.getMember().hasPermission(Permission.VIEW_AUDIT_LOGS)) {
             if (Filter.isUnsafe(message.getContentStripped())) {

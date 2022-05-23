@@ -27,17 +27,25 @@ public class Filter {
      * @param whitelist Whether it's updating the whitelist or blacklist. true = whitelist, false = blacklist;
      * @param e the entry to add to the list.
      */
-    public static void updateList(boolean whitelist, String e) {
-        if(whitelist)
-            word_whitelist.add(e);
-        word_blacklist.add(e);
+    public static void updateList(boolean whitelist, String e, boolean add) {
+        if(add) {
+            if (whitelist)
+                word_whitelist.add(e);
+            else
+                word_blacklist.add(e);
+        } else {
+            if (whitelist)
+                word_whitelist.remove(e);
+            else
+                word_blacklist.remove(e);
+        }
     }
     /**
      * Adds a list of new entries to the whitelist/blacklist.
      * @param whitelist Whether it's updating the whitelist or blacklist. true = whitelist, false = blacklist;
      * @param e the entry to add to the list.
      */
-    public static void updateList(boolean whitelist, Collection<String> e) {
+    public static void updateList(boolean whitelist, Collection<String> e, boolean add) {
         if(whitelist)
             word_whitelist.addAll(e);
         word_blacklist.addAll(e);
@@ -97,11 +105,11 @@ public class Filter {
         ).queue();
         user.openPrivateChannel().flatMap(c -> c.sendMessageEmbeds(new EmbedBuilder()
                 .setAuthor(member.getEffectiveName(), null,  member.getEffectiveAvatarUrl())
-                .setTitle("Whoa! That's not allowed here at" + message.getGuild().getName() + "!")
+                .setTitle("Whoa! That's not allowed here at " + message.getGuild().getName() + "!")
                 .setColor(Color.RED)
                 .setDescription("We have been notified of your actions. Do not do it again.")
                 .addField("**> Your Message:**", message.getContentDisplay(), false)
-                .setFooter("You could be Kicked or worse Banished").build()
+                .setFooter("You could be kicked, or worse: Banished.").build()
         )).queue();
         message.delete().queue();
     }

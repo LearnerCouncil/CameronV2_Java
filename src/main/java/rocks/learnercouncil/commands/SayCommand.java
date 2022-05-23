@@ -5,10 +5,14 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import org.jetbrains.annotations.NotNull;
 import rocks.learnercouncil.Cameron;
 
-import java.awt.*;
+import java.awt.Color;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SayCommand extends ListenerAdapter {
 
@@ -66,8 +70,13 @@ public class SayCommand extends ListenerAdapter {
 
     @Override
     public void onCommandAutoCompleteInteraction(@NotNull CommandAutoCompleteInteractionEvent event) {
-        if(event.getName().equals("sayembed")) {
-
+        if(event.getName().equals("sayembed") && event.getFocusedOption().getName().equals("color")) {
+            String[] arguments = new String[]{"black", "blue", "cyan", "dark gray", "gray", "green", "light gray", "magenta", "orange", "pink", "red", "white", "yellow"};
+            List<Command.Choice> completions = Stream.of(arguments)
+                    .filter(a -> a.startsWith(event.getFocusedOption().getValue()))
+                    .map(a -> new Command.Choice(a, a))
+                    .collect(Collectors.toList());
+            event.replyChoices(completions).queue();
         }
     }
 }

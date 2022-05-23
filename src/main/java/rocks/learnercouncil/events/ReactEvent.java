@@ -115,6 +115,7 @@ public class ReactEvent extends ListenerAdapter {
 
         dictionary.put("⭕", 'o');
 
+        dictionary.put("ℹ️", 'i');
 
         dictionary.put("\uD83C\uDD97", 'k');
 

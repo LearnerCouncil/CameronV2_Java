@@ -3,59 +3,84 @@ package rocks.learnercouncil;
 
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
+import rocks.learnercouncil.commands.PronounsCommand;
 
-import java.awt.*;
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.awt.Color;
+import java.util.*;
 
 /**
- * Message caching function by https://gist.github.com/Almighty-Alpaca
+ * Mdidified from user https://gist.github.com/Almighty-Alpaca
  */
 public class MessageCache extends ListenerAdapter
 {
 
-    private final Map<String, Message> messageMap;
+    private static final Map<String, Message> messageMap = Collections.synchronizedMap(new LinkedHashMap<>());
     //Amount of messages the cache can hold before it starts deleting old ones;
     private static final int THRESHOLD = 4096;
+    //Amout of messages it initializes from each channel on startup
+    private static final int INITIAL_THRESHOLD = 50;
 
-    public MessageCache()
-    {
-        this.messageMap = Collections.synchronizedMap(new LinkedHashMap<>());
-        Cameron.logger.info("HashMap initialized");
+    public static void initializeMessages(Guild guild) {
+        for(MessageChannel c : guild.getTextChannels()) {
+            int j = 0;
+            for(Message message : c.getIterableHistory()) {
+                if(j >= INITIAL_THRESHOLD) break;
+                if(message.getAuthor().isBot()) continue;
+                messageMap.put(message.getId(), message);
+                if(messageMap.size() > THRESHOLD)
+                    messageMap.remove(messageMap.keySet().stream().findFirst().get());
+
+                j++;
+            }
+        }
     }
 
     public Message getMessage(final String Id)
     {
-        return this.messageMap.get(Id);
+        return messageMap.get(Id);
     }
 
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         final Message message = event.getMessage();
         if(message.getAuthor().isBot()) return;
-        this.messageMap.put(message.getId(), message);
-        Cameron.logger.info("Message '" + message + "' added, Size: " + messageMap.size());
-        if(messageMap.size() > THRESHOLD) {
+        messageMap.put(message.getId(), message);
+        if(messageMap.size() > THRESHOLD)
             messageMap.remove(messageMap.keySet().stream().findFirst().get());
-            Cameron.logger.info("Threshold reached, voiding " + messageMap.get(messageMap.keySet().stream().findFirst().get()));
-        }
     }
     @Override
     public void onMessageDelete(@NotNull MessageDeleteEvent event) {
-        Cameron.logger.info("a message has been deleted");
-        if(this.messageMap.containsKey(event.getMessageId())) {
-            Cameron.logger.info("Map contains key");
+        if(messageMap.containsKey(event.getMessageId())) {
             Message message = getMessage(event.getMessageId());
+            Cameron.getExistingChannel("delete-log").sendMessageEmbeds(new EmbedBuilder()
+                    .setColor(Color.YELLOW)
+                    .setAuthor(message.getAuthor().getAsTag() + " message got deleted")
+                    .addField(new MessageEmbed.Field("Message:", message.getContentDisplay(), false))
+                    .setFooter(Cameron.CURRENT_DATE)
+                    .build()
+            ).queue();
+
+            if(event.getChannel().getName().equals("word-blacklist"))
+                Filter.updateList(false, message.getContentStripped(), false);
+            else if(event.getChannel().getName().equals("word-whitelist"))
+                Filter.updateList(true, message.getContentStripped(), false);
+            else if(event.getChannel().getName().equals("pronouns"))
+                PronounsCommand.removePronounRole(message.getContentStripped());
+        }
+        messageMap.remove(event.getMessageId());
+    }
+    @Override
+    public void onMessageBulkDelete(@NotNull MessageBulkDeleteEvent event) {
+        event.getMessageIds().forEach(i -> {
+            if(messageMap.containsKey(i)) {
+                Message message = getMessage(i);
                 Cameron.getExistingChannel("delete-log").sendMessageEmbeds(new EmbedBuilder()
                         .setColor(Color.YELLOW)
                         .setAuthor(message.getAuthor().getAsTag() + " message got deleted")
@@ -63,28 +88,20 @@ public class MessageCache extends ListenerAdapter
                         .setFooter(Cameron.CURRENT_DATE)
                         .build()
                 ).queue();
-        }
-        this.messageMap.remove(event.getMessageId());
-    }
-    @Override
-    public void onMessageBulkDelete(@NotNull MessageBulkDeleteEvent event) {
-        event.getMessageIds().forEach(i -> {
-            if(this.messageMap.containsKey(i)) {
-                Message message = getMessage(i);
-                Cameron.getExistingChannel("delete-log").sendMessageEmbeds(new EmbedBuilder()
-                        .setColor(Color.YELLOW)
-                        .setAuthor(message.getAuthor().getAsTag() + " message got deleted")
-                        .addField(new MessageEmbed.Field("Message:", message.getContentDisplay(), false))
-                        .setTimestamp(LocalDate.now())
-                        .build()
-                ).queue();
+
+                if(event.getChannel().getName().equals("word-blacklist"))
+                    Filter.updateList(false, message.getContentStripped(), false);
+                else if(event.getChannel().getName().equals("word-whitelist"))
+                    Filter.updateList(true, message.getContentStripped(), false);
+                else if(event.getChannel().getName().equals("pronouns"))
+                    PronounsCommand.removePronounRole(message.getContentStripped());
             }
         });
-        event.getMessageIds().forEach(this.messageMap.keySet()::remove);
+        event.getMessageIds().forEach(messageMap.keySet()::remove);
     }
     @Override
     public void onMessageUpdate(@NotNull MessageUpdateEvent event) {
-        if(this.messageMap.containsKey(event.getMessageId())) {
+        if(messageMap.containsKey(event.getMessageId())) {
             Cameron.getExistingChannel("edit-log").sendMessageEmbeds(new EmbedBuilder()
                     .setColor(Color.YELLOW)
                     .setAuthor(getMessage(event.getMessageId()).getAuthor().getAsTag() + " message got edited")
@@ -95,6 +112,6 @@ public class MessageCache extends ListenerAdapter
             ).queue();
         }
         final Message message = event.getMessage();
-        this.messageMap.put(message.getId(), message);
+        messageMap.put(message.getId(), message);
     }
 }
