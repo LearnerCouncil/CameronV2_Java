@@ -17,17 +17,16 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 /**
- * Message cacheing function by https://gist.github.com/Almighty-Alpaca
+ * Message caching function by https://gist.github.com/Almighty-Alpaca
  */
 public class MessageCache extends ListenerAdapter
 {
 
     private final Map<String, Message> messageMap;
     //Amount of messages the cache can hold before it starts deleting old ones;
-    private final int THRESHOLD = 4096;
+    private static final int THRESHOLD = 4096;
 
     public MessageCache()
     {

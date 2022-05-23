@@ -3,7 +3,10 @@ package rocks.learnercouncil;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -62,20 +65,26 @@ public class Cameron {
                 ).build().awaitReady();
 
         Filter.initializeLists();
-        //PronounsCommand.initializeRoles();
+        PronounsCommand.initializeRoles();
 
         logger.debug("Getting guild...");
         Guild guild = jda.getGuildById(GUILD_ID);
 
         if(guild != null) {
             logger.info("Guild: " + guild.getName());
-            //Currently guild commands but may be changed to global commands or release
-            //i.e. jda.upsertCommand(...).queue();
-            guild.upsertCommand("ping", "Ping Pong!").queue();
-            guild.upsertCommand("request", "Request Access to the server").queue();
-            guild.upsertCommand("rps", "Play 'Rock, Paper, Scissors' with Cameron").queue();
-            guild.upsertCommand("say", "Make cameron say something").addOption(OptionType.STRING, "message", "The thing to Cameron will say", true).setDefaultEnabled(false).queue();
-            guild.upsertCommand("pronouns", "Set your pronouns").queue();
+            //Currently guild commands but may be changed to global commands on release
+            //i.e. jda.updateCommands().addCommands(...).queue();
+            guild.updateCommands().addCommands(
+            Commands.slash("ping", "Ping Pong!"),
+            Commands.slash("request", "Request Access to the server"),
+            Commands.slash("rps", "Play 'Rock, Paper, Scissors' with Cameron"),
+            Commands.slash("say", "Make cameron say something").addOption(OptionType.STRING, "message", "The thing to Cameron will say", true).setDefaultEnabled(false),
+            Commands.slash("sayembed", "Make cameron say something as an embed").addOptions(
+                    new OptionData(OptionType.STRING, "color", "The color of the sidebar of the embed", true, true),
+                    new OptionData(OptionType.STRING, "title", "The title of the embed", true),
+                    new OptionData(OptionType.STRING, "message", "The thing cameron will say", true)).setDefaultEnabled(false),
+            Commands.slash("pronouns", "Set your pronouns")
+            ).queue();
         }
     }
 
