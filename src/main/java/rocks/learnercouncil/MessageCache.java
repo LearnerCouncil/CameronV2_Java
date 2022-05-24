@@ -32,8 +32,8 @@ public class MessageCache extends ListenerAdapter
             int j = 0;
             for(Message message : c.getIterableHistory()) {
                 if(j >= INITIAL_THRESHOLD) break;
-                if(message.getAuthor().isBot()) continue;
-                messageMap.put(message.getId(), message);
+                if(!message.getAuthor().isBot())
+                    messageMap.put(message.getId(), message);
                 if(messageMap.size() > THRESHOLD)
                     messageMap.remove(messageMap.keySet().stream().findFirst().get());
 
@@ -112,6 +112,7 @@ public class MessageCache extends ListenerAdapter
             ).queue();
         }
         final Message message = event.getMessage();
+        if(message.getAuthor().isBot()) return;
         messageMap.put(message.getId(), message);
     }
 }

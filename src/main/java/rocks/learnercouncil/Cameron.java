@@ -39,7 +39,6 @@ public class Cameron {
      * @throws LoginException I assume in case an invalid token is supplied.
      */
     public static void main(String[] args) throws InterruptedException, LoginException {
-
         logger.debug("Starting bot...");
         if(args.length <= 0)
             throw new IllegalArgumentException("Must supply the bot token as the first argument.");
@@ -65,13 +64,9 @@ public class Cameron {
                 ).build().awaitReady();
 
         Filter.initializeLists();
-        PronounsCommand.initializeRoles();
-
-        logger.debug("Getting guild...");
         Guild guild = jda.getGuildById(GUILD_ID);
 
         if(guild != null) {
-            logger.info("Guild: " + guild.getName());
             MessageCache.initializeMessages(guild);
             //Currently guild commands but may be changed to global commands on release
             //i.e. jda.updateCommands().addCommands(...).queue();
@@ -87,12 +82,10 @@ public class Cameron {
             Commands.slash("pronouns", "Set your pronouns")
             ).queue();
             guild.loadMembers().onSuccess(l -> {
-                logger.error(l.toString());
                 for(Member m : l) {
                     Role pnListRole = Cameron.getExistingRole("----------------  Pronouns ----------------");
                     if (m.getRoles().contains(pnListRole) || m.getUser().isBot()) continue;
                     guild.addRoleToMember(m, pnListRole).queue();
-                    logger.error("Adding role to: " + m);
                 }
             });
 

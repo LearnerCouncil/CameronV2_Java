@@ -1,11 +1,13 @@
 package rocks.learnercouncil;
 
+import kotlin.text.Regex;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 
 import java.awt.*;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class Filter {
 
@@ -75,6 +77,14 @@ public class Filter {
         return false;
     }
 
+    /**
+     * Counts all non-ASCII characters in string.
+     * @param s The string.
+     * @return The amount of non-ASCII characters in the string.
+     */
+    public static int countNonASCII(String s) {
+        return s.replaceAll("[\\p{ASCII}]", "").length();
+    }
     /**
      * Deteltes a message, logs it to the inappropriate log, and DMs the user.
      * @param member The person that sent the mesage, but as a 'net.dv8tion.jda.api.entities.Member' as to access things like the nickname.
