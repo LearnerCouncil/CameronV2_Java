@@ -55,9 +55,9 @@ public class PronounsCommand extends ListenerAdapter {
         if(guild.getRolesByName(PREFIX + name, true).isEmpty())
         guild.createRole().setName(PREFIX + name).queue(pronounRoles::add);
     }
-    public static void removePronounRole(String name) {
-        pronounRoles.remove(Cameron.getExistingRole(PREFIX + name));
-        Cameron.getExistingRole(PREFIX + name).delete().queue();
+    public static void removePronounRole(String name, Guild guild) {
+        pronounRoles.remove(Cameron.getExistingRole(PREFIX + name, guild));
+        Cameron.getExistingRole(PREFIX + name, guild).delete().queue();
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -104,10 +104,10 @@ public class PronounsCommand extends ListenerAdapter {
                         if(Objects.equals(b.getId(), event.getComponentId())) {
                             if(b.getStyle() == ButtonStyle.PRIMARY) {
                                 a.updateComponent(b, event.getComponent().withStyle(ButtonStyle.SECONDARY));
-                                guild.removeRoleFromMember(event.getMember(), Cameron.getExistingRole(event.getComponent().getLabel())).queue();
+                                guild.removeRoleFromMember(event.getMember(), Cameron.getExistingRole(event.getComponent().getLabel(), guild)).queue();
                             } else {
                                 a.updateComponent(b, event.getComponent().withStyle(ButtonStyle.PRIMARY));
-                                guild.addRoleToMember(event.getMember(), Cameron.getExistingRole(event.getComponent().getLabel())).queue();
+                                guild.addRoleToMember(event.getMember(), Cameron.getExistingRole(event.getComponent().getLabel(), guild)).queue();
                             }
                             event.deferEdit().setActionRows(buttonRows).queue();
                         }

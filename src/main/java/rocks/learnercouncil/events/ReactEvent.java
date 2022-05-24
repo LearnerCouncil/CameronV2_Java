@@ -67,7 +67,7 @@ public class ReactEvent extends ListenerAdapter {
                         .addField("Message: ", link, false)
                         .addField(new MessageEmbed.Field("Offenders:", String.join(", ", users), false))
                         .addField(new MessageEmbed.Field("Reactions:", reactions.toString(), false))
-                        .setFooter(Cameron.CURRENT_DATE)
+                        .setTimestamp(Cameron.CURRENT_DATE)
                         .build()).queue());
             }
         });
@@ -84,7 +84,7 @@ public class ReactEvent extends ListenerAdapter {
                     .setColor(Color.YELLOW)
                     .setAuthor(member.getEffectiveName(), null, m.getAuthor().getEffectiveAvatarUrl())
                     .addField("Starred Message", m.getContentDisplay(), false)
-                            .setFooter(Cameron.CURRENT_DATE)
+                            .setTimestamp(Cameron.CURRENT_DATE)
                     .build()
             ).queue();
         }));

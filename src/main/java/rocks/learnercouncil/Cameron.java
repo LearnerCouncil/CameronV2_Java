@@ -8,26 +8,27 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rocks.learnercouncil.commands.*;
-import rocks.learnercouncil.events.EditEvent;
-import rocks.learnercouncil.events.JoinEvent;
-import rocks.learnercouncil.events.MessageEvent;
-import rocks.learnercouncil.events.ReactEvent;
+import rocks.learnercouncil.events.*;
 
 import javax.security.auth.login.LoginException;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
+import java.util.List;
 
 public class Cameron {
 
     //Current guild (Server) ID, currently set to my test server, but must be changed on release to the Learner Server's.
     public static final String GUILD_ID = "976524936426442753";
-    public static final String CURRENT_DATE = (DateTimeFormatter.ofPattern("MM/dd/yyyy").format(LocalDate.now()));
+    //public static final String CURRENT_DATE = (DateTimeFormatter.ofPattern("MM/dd/yyyy").format(LocalDate.now()));
+    public static final Instant CURRENT_DATE = Instant.now();
 
     private static JDA jda;
     public static final Logger logger = LoggerFactory.getLogger("rocks.learnercouncil.Cameron");
@@ -51,6 +52,10 @@ public class Cameron {
                         new RpsCommand(),
                         new SayCommand(),
                         new PronounsCommand(),
+                        new WhoisCommand(),
+                        new ReportCommand(),
+                        new KickCommand(),
+                        new BanCommand(),
                         //Events
                         new EditEvent(),
                         new MessageEvent(),
@@ -60,12 +65,15 @@ public class Cameron {
                 )
                 .enableIntents(
                         GatewayIntent.GUILD_MESSAGE_REACTIONS,
-                        GatewayIntent.GUILD_MEMBERS
+                        GatewayIntent.GUILD_MEMBERS,
+                        GatewayIntent.GUILD_PRESENCES
+                ).enableCache(
+                        CacheFlag.ONLINE_STATUS
                 ).build().awaitReady();
 
         Filter.initializeLists();
         Guild guild = jda.getGuildById(GUILD_ID);
-
+        Cameron.logger.info("");
         if(guild != null) {
             MessageCache.initializeMessages(guild);
             //Currently guild commands but may be changed to global commands on release
@@ -79,11 +87,22 @@ public class Cameron {
                     new OptionData(OptionType.STRING, "color", "The color of the sidebar of the embed", true, true),
                     new OptionData(OptionType.STRING, "title", "The title of the embed", true),
                     new OptionData(OptionType.STRING, "message", "The thing cameron will say", true)).setDefaultEnabled(false),
-            Commands.slash("pronouns", "Set your pronouns")
+            Commands.slash("pronouns", "Set your pronouns"),
+            Commands.slash("whois", "Check the information of a certain user").addOption(OptionType.USER, "user", "The usre to get the information of", true),
+            Commands.slash("report", "Report a user").addOptions(
+                    new OptionData(OptionType.USER, "user", "The user you're reporting.", true),
+                    new OptionData(OptionType.STRING, "reason", "The reason you're reporting them", false)
+            ),
+            Commands.slash("help", "Gives help with commands"),
+            Commands.slash("kick", "Kicks a user").addOptions(
+                    new OptionData(OptionType.USER, "user", "the user to kick", true),
+                    new OptionData(OptionType.STRING, "reason", "the reason you're kickeng them", false)
+            ).setDefaultEnabled(false)
             ).queue();
+
             guild.loadMembers().onSuccess(l -> {
                 for(Member m : l) {
-                    Role pnListRole = Cameron.getExistingRole("----------------  Pronouns ----------------");
+                    Role pnListRole = Cameron.getExistingRole("----------------  Pronouns ----------------", guild);
                     if (m.getRoles().contains(pnListRole) || m.getUser().isBot()) continue;
                     guild.addRoleToMember(m, pnListRole).queue();
                 }
@@ -108,14 +127,29 @@ public class Cameron {
     /**
      * Gets a certain role by it's name.
      * @param name The name of the role, must refer to an existing role.
-     * @return The role taht matches the supplied role.
+     * @param guild The guild to get the role from.
+     * @return The role that matches the supplied role.
      * @throws NullPointerException if a role by that name does not exist.
      */
-    public static Role getExistingRole(@NotNull String name) {
-        Guild guild = jda.getGuildById(GUILD_ID);
+    public static Role getExistingRole(@NotNull String name, Guild guild) {
         if(!guild.getRolesByName(name, true).isEmpty())
             return guild.getRolesByName(name, true).get(0);
         logger.error("Role '" + name + "' doesn't exist!");
+        throw new NullPointerException();
+    }
+
+    /**
+     * Gets a certain emoji by it's name.
+     * @param name The name of the emoji, nust refer to an existing emoji.
+     * @param guild The guild to get the emoji from.
+     * @return The emoji that matches the supplied name.
+     * @throws NullPointerException if an emoji by that name doesn't exist
+     */
+    public static Emoji getExistingEmoji(@NotNull String name, Guild guild) {
+        List<Emote> emojis = guild.getEmotesByName(name, true);
+        if(!emojis.isEmpty())
+            return Emoji.fromEmote(emojis.get(0));
+        logger.error("Emoji '" + name + "' doesn't exist!");
         throw new NullPointerException();
     }
 

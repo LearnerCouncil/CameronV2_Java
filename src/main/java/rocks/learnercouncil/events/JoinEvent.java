@@ -11,14 +11,15 @@ public class JoinEvent extends ListenerAdapter {
 
     @Override
     public void onGuildMemberJoin(@NotNull GuildMemberJoinEvent event) {
-        event.getGuild().addRoleToMember(event.getMember(), Cameron.getExistingRole("Waiting")).queue();
+        event.getGuild().addRoleToMember(event.getMember(), Cameron.getExistingRole("Waiting", event.getGuild())).queue();
+        event.getGuild().addRoleToMember(event.getMember(), Cameron.getExistingRole("----------------  Pronouns ----------------", event.getGuild())).queue();
         Cameron.getExistingChannel("rr-1").sendMessage("Hello " + event.getMember().getAsMention() + "! Type **/request** to begin.").queue();
         Member m = event.getMember();
         Cameron.getExistingChannel("member-log").sendMessageEmbeds(new EmbedBuilder()
                 .setAuthor(m.getEffectiveName(), null, m.getEffectiveAvatarUrl())
-                .setTitle(m.getEffectiveName() + "Joined the server")
+                .setTitle(m.getEffectiveName() + " joined the server")
                 .setDescription("And now we wait...")
-                .setFooter(Cameron.CURRENT_DATE)
+                .setTimestamp(Cameron.CURRENT_DATE)
                 .build()
         ).queue();
     }

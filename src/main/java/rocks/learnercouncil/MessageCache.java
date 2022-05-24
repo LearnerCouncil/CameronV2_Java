@@ -63,7 +63,7 @@ public class MessageCache extends ListenerAdapter
                     .setColor(Color.YELLOW)
                     .setAuthor(message.getAuthor().getAsTag() + " message got deleted")
                     .addField(new MessageEmbed.Field("Message:", message.getContentDisplay(), false))
-                    .setFooter(Cameron.CURRENT_DATE)
+                    .setTimestamp(Cameron.CURRENT_DATE)
                     .build()
             ).queue();
 
@@ -72,7 +72,7 @@ public class MessageCache extends ListenerAdapter
             else if(event.getChannel().getName().equals("word-whitelist"))
                 Filter.updateList(true, message.getContentStripped(), false);
             else if(event.getChannel().getName().equals("pronouns"))
-                PronounsCommand.removePronounRole(message.getContentStripped());
+                PronounsCommand.removePronounRole(message.getContentStripped(), event.getGuild());
         }
         messageMap.remove(event.getMessageId());
     }
@@ -85,7 +85,7 @@ public class MessageCache extends ListenerAdapter
                         .setColor(Color.YELLOW)
                         .setAuthor(message.getAuthor().getAsTag() + " message got deleted")
                         .addField(new MessageEmbed.Field("Message:", message.getContentDisplay(), false))
-                        .setFooter(Cameron.CURRENT_DATE)
+                        .setTimestamp(Cameron.CURRENT_DATE)
                         .build()
                 ).queue();
 
@@ -94,7 +94,7 @@ public class MessageCache extends ListenerAdapter
                 else if(event.getChannel().getName().equals("word-whitelist"))
                     Filter.updateList(true, message.getContentStripped(), false);
                 else if(event.getChannel().getName().equals("pronouns"))
-                    PronounsCommand.removePronounRole(message.getContentStripped());
+                    PronounsCommand.removePronounRole(message.getContentStripped(), event.getGuild());
             }
         });
         event.getMessageIds().forEach(messageMap.keySet()::remove);
@@ -107,7 +107,7 @@ public class MessageCache extends ListenerAdapter
                     .setAuthor(getMessage(event.getMessageId()).getAuthor().getAsTag() + " message got edited")
                     .addField(new MessageEmbed.Field("Original Message:", getMessage(event.getMessageId()).getContentDisplay(), false))
                     .addField(new MessageEmbed.Field("New Message:", event.getMessage().getContentDisplay(), false))
-                    .setFooter(Cameron.CURRENT_DATE)
+                    .setTimestamp(Cameron.CURRENT_DATE)
                     .build()
             ).queue();
         }
