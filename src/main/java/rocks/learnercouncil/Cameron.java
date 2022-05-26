@@ -119,8 +119,9 @@ public class Cameron {
      * @throws NullPointerException if a channel by that name does not exist.
      */
     public static TextChannel getExistingChannel(@NotNull String name) {
-        if(!jda.getTextChannelsByName(name, true).isEmpty())
-            return jda.getTextChannelsByName(name, true).get(0);
+        Guild guild = jda.getGuildById(GUILD_ID);
+        if(!guild.getTextChannelsByName(name, true).isEmpty())
+            return guild.getTextChannelsByName(name, true).get(0);
         logger.error("Channel '" + name + "' doesn't exist!");
         throw new NullPointerException();
     }
