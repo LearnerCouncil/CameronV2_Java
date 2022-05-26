@@ -19,21 +19,17 @@ public class SayCommand extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         if(event.getName().equals("say")) {
-            if(event.getMember() == null) return;
-            if(event.getMember().hasPermission(Permission.VIEW_AUDIT_LOGS)) {
-                if(event.getOption("message") == null) return;
-                event.reply("Message Sent!").setEphemeral(true).queue();
-                //noinspection ConstantConditions
-                event.getChannel().sendMessage(event.getOption("message").getAsString()).queue();
-            } else {
-                event.reply("You do not have permission to perform this command.").setEphemeral(true).queue();
-            }
+            if(event.getOption("message") == null) return;
+            event.reply("Message Sent!").setEphemeral(true).queue();
+            //noinspection ConstantConditions
+            event.getChannel().sendMessage(event.getOption("message").getAsString()).queue();
         }
+
         if(event.getName().equals("sayembed")) {
             if(event.getOption("color") == null) return;
             //noinspection ConstantConditions
             String sColor = event.getOption("color").getAsString().toLowerCase();
-            Color color = switch (sColor) {
+            Color color = switch (sColor.toLowerCase()) {
                 case "black" -> Color.BLACK;
                 case "blue" -> Color.BLUE;
                 case "cyan" -> Color.CYAN;

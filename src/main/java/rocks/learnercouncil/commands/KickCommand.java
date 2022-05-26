@@ -16,27 +16,28 @@ import java.util.Objects;
 
 public class KickCommand extends ListenerAdapter {
 
-    private String reason;
+    private String reason = "No reason supplied.";
     private User user;
 
-
-    @SuppressWarnings("ConstantConditions")
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         if(event.getName().equals("kick")) {
             if(!event.isFromGuild())
                 event.reply("Has to be run from inside a guild").queue();
             Guild guild = event.getGuild();
+
             user = Objects.requireNonNull(event.getOption("user")).getAsUser();
             if(user.isBot())
                 event.reply("I can't kick bots, you have to do that manually").queue();
+
             if(event.getOption("reason") != null)
                 reason = Objects.requireNonNull(event.getOption("reason")).getAsString();
-            if(!event.getMember().hasPermission(Permission.KICK_MEMBERS))
+            if(!Objects.requireNonNull(event.getMember()).hasPermission(Permission.KICK_MEMBERS))
                 event.reply("You do not have permission to kick members.").setEphemeral(true).queue();
             else {
+                //noinspection ConstantConditions
                 event.reply("Are you sure you want to kick " + user.getAsMention() + " (" + user.getAsTag() + ") from the server?").setEphemeral(true).addActionRow(
-                        Button.primary("kickcmd_yes", Cameron.getExistingEmoji("greentick", guild)),
+                        Button.success("kickcmd_yes", Cameron.getExistingEmoji("greentick", guild)),
                         Button.danger("kickcmd_no", Cameron.getExistingEmoji("redtick", guild))
                 ).queue();
             }
@@ -46,14 +47,14 @@ public class KickCommand extends ListenerAdapter {
     @Override
     public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
         String componentId = event.getComponentId();
-        if ("kickcmd_yes".equals(componentId)) {
-            if(event.getGuild() == null)
+        if (componentId.equals("kickcmd_yes")) {
+            if(!event.isFromGuild())
                 event.editMessage("Has to be run from inside in a server").setActionRows().queue();
             event.editMessage("Kicked.").setActionRows().queue();
             event.getJDA().openPrivateChannelById(user.getId()).queue(p -> p.sendMessageEmbeds(new EmbedBuilder()
                     .setColor(Color.RED)
                     .setAuthor("You have been kicked from " + event.getGuild().getName())
-                    .addField("Reason", reason != null ? reason : "No reason supplied.", false)
+                    .addField("Reason", reason, false)
                     .build()
             ).queue(k -> event.getGuild().kick(user).queue()));
             Cameron.getExistingChannel("kick-log").sendMessageEmbeds(new EmbedBuilder()
@@ -62,12 +63,12 @@ public class KickCommand extends ListenerAdapter {
                     .setFooter(user.getAsTag())
                     .setTimestamp(Cameron.CURRENT_DATE)
                     .setDescription("**> Kicked Member:**\n" + user.getAsMention() + " (" + user.getId() + ") " +
-                                    "\n**> Kicked By:**\n" + event.getUser().getAsMention() + " (" + event.getUser().getId() + ") " +
-                                    "\n**> Reason:**\n" + (reason != null ? reason : "No Reason Supplied")
+                                    "**> Kicked By:**\n" + event.getUser().getAsMention() + " (" + event.getUser().getId() + ") " +
+                                    "**> Reason:**\n" + reason
                             )
                     .build()
             ).queue();
-        } else if ("kickcmd_no".equals(componentId))
+        } else if (componentId.equals("kickcmd_no"))
             event.editMessage("Cancelled.").setActionRows().queue();
     }
 }
