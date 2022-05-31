@@ -25,8 +25,8 @@ import java.util.List;
 
 public class Cameron {
 
-    //Current guild (Server) ID, currently set to my test server, but must be changed on release to the Learner Server's.
-    public static final String GUILD_ID = "976524936426442753";
+    //Current guild (Server) ID, Set by the second command-line argument.
+    public static String GUILD_ID;
     //public static final String CURRENT_DATE = (DateTimeFormatter.ofPattern("MM/dd/yyyy").format(LocalDate.now()));
     public static final Instant CURRENT_DATE = Instant.now();
 
@@ -41,8 +41,9 @@ public class Cameron {
      */
     public static void main(String[] args) throws InterruptedException, LoginException {
         logger.debug("Starting bot...");
-        if(args.length <= 0)
-            throw new IllegalArgumentException("Must supply the bot token as the first argument.");
+        if(args.length <= 1)
+            throw new IllegalArgumentException("Must supply the bot token as the first argument, and the guild id as the second.");
+        GUILD_ID = args[1];
         jda = JDABuilder.createDefault(args[0])
                 .setActivity(Activity.watching("over you learners!"))
                 .addEventListeners(
@@ -78,7 +79,7 @@ public class Cameron {
             MessageCache.initializeMessages(guild);
             //Currently guild commands but may be changed to global commands on release
             //i.e. jda.updateCommands().addCommands(...).queue();
-            guild.updateCommands().addCommands(
+            jda.updateCommands().addCommands(
             Commands.slash("ping", "Ping Pong!"),
             Commands.slash("request", "Request Access to the server"),
             Commands.slash("rps", "Play 'Rock, Paper, Scissors' with Cameron"),
