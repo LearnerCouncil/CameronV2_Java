@@ -39,6 +39,7 @@ public class PronounsCommand extends ListenerAdapter {
                }
            });
            guild.getRoles().stream().filter(r -> r.getName().startsWith(PREFIX)).forEach(pronounRoles::add);
+           Cameron.logger.info(pronounRoles.toString());
         }
     }
 
@@ -56,6 +57,7 @@ public class PronounsCommand extends ListenerAdapter {
         guild.createRole().setName(PREFIX + name).queue(pronounRoles::add);
     }
     public static void removePronounRole(String name, Guild guild) {
+        Cameron.logger.info("Deleting: " + name);
         pronounRoles.remove(Cameron.getExistingRole(PREFIX + name, guild));
         Cameron.getExistingRole(PREFIX + name, guild).delete().queue();
     }

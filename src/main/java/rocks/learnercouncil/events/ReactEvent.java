@@ -16,7 +16,7 @@ import java.util.*;
 
 public class ReactEvent extends ListenerAdapter {
 
-    private final int THRESHOLD = 25;
+    private final int THRESHOLD = 10;
     private final Map<String, Character> dictionary = new HashMap<>();
 
     public ReactEvent() {

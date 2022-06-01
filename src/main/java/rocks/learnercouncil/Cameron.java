@@ -74,8 +74,8 @@ public class Cameron {
 
         Filter.initializeLists();
         Guild guild = jda.getGuildById(GUILD_ID);
-        Cameron.logger.info("");
         if(guild != null) {
+            Cameron.logger.info("Found Guild: " + guild.getName());
             MessageCache.initializeMessages(guild);
             //Currently guild commands but may be changed to global commands on release
             //i.e. jda.updateCommands().addCommands(...).queue();
@@ -100,9 +100,10 @@ public class Cameron {
                             new OptionData(OptionType.USER, "user", "the user to kick", true),
                             new OptionData(OptionType.STRING, "reason", "the reason you're kicking them", false),
                             new OptionData(OptionType.INTEGER, "delete_history_days", "The amount of days of recent message history from this user you want to delete.", false)).setDefaultEnabled(false)
-            ).queue();
+            ).queue(c -> logger.info("Loaded Commands"));
 
             guild.loadMembers().onSuccess(l -> {
+                logger.info("Loaded Members");
                 for(Member m : l) {
                     Role pnListRole = Cameron.getExistingRole("----------------  Pronouns ----------------", guild);
                     if (m.getRoles().contains(pnListRole) || m.getUser().isBot()) continue;
