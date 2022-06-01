@@ -79,7 +79,7 @@ public class Cameron {
             MessageCache.initializeMessages(guild);
             //Currently guild commands but may be changed to global commands on release
             //i.e. jda.updateCommands().addCommands(...).queue();
-            jda.updateCommands().addCommands(
+            guild.updateCommands().addCommands(
             Commands.slash("ping", "Ping Pong!"),
             Commands.slash("request", "Request Access to the server"),
             Commands.slash("rps", "Play 'Rock, Paper, Scissors' with Cameron"),
