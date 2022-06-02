@@ -59,13 +59,17 @@ public class Filter {
      * @return True if it contains a word that's in the blacklist, but not the whitelist.
      */
     public static boolean isUnsafe(String e) {
-        String[] msg = e.split(" ");
+        String[] msg = e.toLowerCase().split(" ");
         for(String s : msg) {
+            Cameron.logger.debug("Testing word: " + s);
             for(String b : word_blacklist) {
                 if(s.contains(b)) {
+                    Cameron.logger.debug(s + " contains " + b);
                     boolean safe = false;
                     for (String w : word_whitelist) {
+                        Cameron.logger.debug("Testing word " + s + " against " + w);
                         if(s.equals(w)) {
+                            Cameron.logger.debug("Match");
                             safe = true;
                             break;
                         }
@@ -113,14 +117,18 @@ public class Filter {
                 .setTimestamp(Cameron.CURRENT_DATE)
                 .build()
         ).queue();
-        user.openPrivateChannel().flatMap(c -> c.sendMessageEmbeds(new EmbedBuilder()
-                .setAuthor(member.getEffectiveName(), null,  member.getEffectiveAvatarUrl())
-                .setTitle("Whoa! That's not allowed here at " + message.getGuild().getName() + "!")
-                .setColor(Color.RED)
-                .setDescription("We have been notified of your actions. Do not do it again.")
-                .addField("**> Your Message:**", message.getContentDisplay(), false)
-                .setFooter("You could be kicked, or worse: Banished.").build()
-        )).queue();
+        try {
+            user.openPrivateChannel().flatMap(c -> c.sendMessageEmbeds(new EmbedBuilder()
+                    .setAuthor(member.getEffectiveName(), null, member.getEffectiveAvatarUrl())
+                    .setTitle("Whoa! That's not allowed here at " + message.getGuild().getName() + "!")
+                    .setColor(Color.RED)
+                    .setDescription("We have been notified of your actions. Do not do it again.")
+                    .addField("**> Your Message:**", message.getContentDisplay(), false)
+                    .setFooter("You could be kicked, or worse: Banished.").build()
+            )).queue();
+        } catch (Exception e) {
+            Cameron.logger.error("Cannot send message to this user");
+        }
         message.delete().queue();
     }
 }
