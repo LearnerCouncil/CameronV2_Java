@@ -7,6 +7,8 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 import rocks.learnercouncil.Cameron;
 
+import java.time.Instant;
+
 public class JoinEvent extends ListenerAdapter {
 
     @Override
@@ -19,7 +21,7 @@ public class JoinEvent extends ListenerAdapter {
                 .setAuthor(m.getEffectiveName(), null, m.getEffectiveAvatarUrl())
                 .setTitle(m.getEffectiveName() + " joined the server")
                 .setDescription("And now we wait...")
-                .setTimestamp(Cameron.CURRENT_DATE)
+                .setTimestamp(Instant.now())
                 .build()
         ).queue();
     }

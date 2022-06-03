@@ -12,6 +12,7 @@ import rocks.learnercouncil.Cameron;
 import rocks.learnercouncil.Filter;
 
 import java.awt.*;
+import java.time.Instant;
 import java.util.*;
 
 public class ReactEvent extends ListenerAdapter {
@@ -67,7 +68,7 @@ public class ReactEvent extends ListenerAdapter {
                         .addField("Message: ", link, false)
                         .addField(new MessageEmbed.Field("Offenders:", String.join(", ", users), false))
                         .addField(new MessageEmbed.Field("Reactions:", reactions.toString(), false))
-                        .setTimestamp(Cameron.CURRENT_DATE)
+                        .setTimestamp(Instant.now())
                         .build()).queue());
             }
         });
@@ -78,13 +79,14 @@ public class ReactEvent extends ListenerAdapter {
         channel.getIterableHistory().queue(s -> g.retrieveMember(m.getAuthor()).queue(member -> {
             for(Message msg : s) {
                 if (msg.getEmbeds().isEmpty()) continue;
-                if (Objects.equals(msg.getEmbeds().get(0).getFields().get(0).getValue(), m.getContentDisplay())) return;
+                if (Objects.equals(msg.getEmbeds().get(0).getFields().get(1).getValue(), "https://www.discord.com/channels/" + m.getGuild().getId() + "/" + m.getChannel().getId() + "/" + m.getId())) return;
             }
             channel.sendMessageEmbeds(new EmbedBuilder()
                     .setColor(Color.YELLOW)
                     .setAuthor(member.getEffectiveName(), null, m.getAuthor().getEffectiveAvatarUrl())
                     .addField("Starred Message", m.getContentDisplay(), false)
-                            .setTimestamp(Cameron.CURRENT_DATE)
+                    .addField("Message Link", "https://www.discord.com/channels/" + m.getGuild().getId() + "/" + m.getChannel().getId() + "/" + m.getId(), false)
+                    .setTimestamp(Instant.now())
                     .build()
             ).queue();
         }));

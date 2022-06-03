@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import rocks.learnercouncil.Cameron;
 
 import java.awt.*;
+import java.time.Instant;
 import java.util.Objects;
 
 public class BanCommand extends ListenerAdapter {
@@ -66,7 +67,7 @@ public class BanCommand extends ListenerAdapter {
                     .setColor(Color.ORANGE)
                     .setThumbnail(user.getEffectiveAvatarUrl())
                     .setFooter(user.getAsTag())
-                    .setTimestamp(Cameron.CURRENT_DATE)
+                    .setTimestamp(Instant.now())
                     .setDescription("**> Banned Member:**\n" + user.getAsMention() + " (" + user.getId() + ") " +
                             "**> Banned By:**\n" + event.getUser().getAsMention() + " (" + event.getUser().getId() + ") " +
                             "**> Reason:**\n" + (reason)

@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import rocks.learnercouncil.commands.PronounsCommand;
 
 import java.awt.Color;
+import java.time.Instant;
 import java.util.*;
 
 /**
@@ -63,7 +64,7 @@ public class MessageCache extends ListenerAdapter
                     .setColor(Color.YELLOW)
                     .setAuthor(message.getAuthor().getAsTag() + " message got deleted")
                     .addField(new MessageEmbed.Field("Message:", message.getContentDisplay(), false))
-                    .setTimestamp(Cameron.CURRENT_DATE)
+                    .setTimestamp(Instant.now())
                     .build()
             ).queue();
 
@@ -85,7 +86,7 @@ public class MessageCache extends ListenerAdapter
                         .setColor(Color.YELLOW)
                         .setAuthor(message.getAuthor().getAsTag() + " message got deleted")
                         .addField(new MessageEmbed.Field("Message:", message.getContentDisplay(), false))
-                        .setTimestamp(Cameron.CURRENT_DATE)
+                        .setTimestamp(Instant.now())
                         .build()
                 ).queue();
 
@@ -107,7 +108,7 @@ public class MessageCache extends ListenerAdapter
                     .setAuthor(getMessage(event.getMessageId()).getAuthor().getAsTag() + " message got edited")
                     .addField(new MessageEmbed.Field("Original Message:", getMessage(event.getMessageId()).getContentDisplay(), false))
                     .addField(new MessageEmbed.Field("New Message:", event.getMessage().getContentDisplay(), false))
-                    .setTimestamp(Cameron.CURRENT_DATE)
+                    .setTimestamp(Instant.now())
                     .build()
             ).queue();
         }

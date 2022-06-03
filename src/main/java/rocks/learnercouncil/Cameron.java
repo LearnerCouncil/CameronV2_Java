@@ -27,8 +27,6 @@ public class Cameron {
 
     //Current guild (Server) ID, Set by the second command-line argument.
     public static String GUILD_ID;
-    //public static final String CURRENT_DATE = (DateTimeFormatter.ofPattern("MM/dd/yyyy").format(LocalDate.now()));
-    public static final Instant CURRENT_DATE = Instant.now();
 
     private static JDA jda;
     public static final Logger logger = LoggerFactory.getLogger("rocks.learnercouncil.Cameron");

@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 import rocks.learnercouncil.Cameron;
 
+import java.time.Instant;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -24,7 +25,7 @@ public class WhoisCommand extends ListenerAdapter {
             User user = Objects.requireNonNull(event.getOption("user")).getAsUser();
             event.replyEmbeds(new EmbedBuilder()
                             .setFooter(member.getEffectiveName(), member.getEffectiveAvatarUrl())
-                            .setTimestamp(Cameron.CURRENT_DATE)
+                            .setTimestamp(Instant.now())
                             .setThumbnail(user.getEffectiveAvatarUrl())
                             .addField("Member Information:",
                                     "> **Display Name**:\n" + member.getEffectiveName() +

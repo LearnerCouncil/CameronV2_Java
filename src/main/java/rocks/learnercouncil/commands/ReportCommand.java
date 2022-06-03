@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import rocks.learnercouncil.Cameron;
 
 import java.awt.*;
+import java.time.Instant;
 import java.util.Objects;
 
 public class ReportCommand extends ListenerAdapter {
@@ -21,7 +22,7 @@ public class ReportCommand extends ListenerAdapter {
             event.reply("Report sent, A council member will review it shortly, and take appropriate action.").setEphemeral(true).queue();
             Objects.requireNonNull(event.getGuild()).retrieveMember(user).queue(member -> Cameron.getExistingChannel("reporting-log").sendMessageEmbeds(new EmbedBuilder()
                     .setColor(Color.YELLOW)
-                    .setTimestamp(Cameron.CURRENT_DATE)
+                    .setTimestamp(Instant.now())
                     .setFooter(Objects.requireNonNull(event.getGuild()).getName(), event.getGuild().getIconUrl())
                     .setAuthor(member.getEffectiveName() + " has been reported", null, user.getEffectiveAvatarUrl())
                     .setDescription("**> Member:** " + user.getAsMention() + " (" + user.getId() + ")\n" +

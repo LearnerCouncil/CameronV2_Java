@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 
 import java.awt.*;
+import java.time.Instant;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -67,8 +68,9 @@ public class Filter {
                     Cameron.logger.debug(s + " contains " + b);
                     boolean safe = false;
                     for (String w : word_whitelist) {
-                        Cameron.logger.debug("Testing word " + s + " against " + w);
-                        if(s.equals(w)) {
+                        String word = w.replaceAll("[\\p{Punct}]", "");
+                        Cameron.logger.debug("Testing word " + s + " against " + word);
+                        if(s.equals(word)) {
                             Cameron.logger.debug("Match");
                             safe = true;
                             break;
@@ -114,7 +116,7 @@ public class Filter {
                                 message.getContentDisplay() +
                                 "\n> **Channel:**\n" +
                                 message.getChannel().getAsMention(),false))
-                .setTimestamp(Cameron.CURRENT_DATE)
+                .setTimestamp(Instant.now())
                 .build()
         ).queue();
         try {
