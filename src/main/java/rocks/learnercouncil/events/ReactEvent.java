@@ -81,14 +81,15 @@ public class ReactEvent extends ListenerAdapter {
                 if (msg.getEmbeds().isEmpty()) continue;
                 if (Objects.equals(msg.getEmbeds().get(0).getFields().get(1).getValue(), "https://www.discord.com/channels/" + m.getGuild().getId() + "/" + m.getChannel().getId() + "/" + m.getId())) return;
             }
-            channel.sendMessageEmbeds(new EmbedBuilder()
+            EmbedBuilder embed = new EmbedBuilder()
                     .setColor(Color.YELLOW)
                     .setAuthor(member.getEffectiveName(), null, m.getAuthor().getEffectiveAvatarUrl())
                     .addField("Starred Message", m.getContentDisplay(), false)
                     .addField("Message Link", "https://www.discord.com/channels/" + m.getGuild().getId() + "/" + m.getChannel().getId() + "/" + m.getId(), false)
-                    .setTimestamp(Instant.now())
-                    .build()
-            ).queue();
+                    .setTimestamp(Instant.now());
+            if(m.getAttachments().get(0).isImage())
+                embed.setImage(m.getAttachments().get(0).getUrl());
+            channel.sendMessageEmbeds(embed.build()).queue();
         }));
     }
     
