@@ -79,6 +79,7 @@ public class ReactEvent extends ListenerAdapter {
         channel.getIterableHistory().queue(s -> g.retrieveMember(m.getAuthor()).queue(member -> {
             for(Message msg : s) {
                 if (msg.getEmbeds().isEmpty()) continue;
+                if (msg.getEmbeds().get(0).getFields().size() < 2) continue;
                 if (Objects.equals(msg.getEmbeds().get(0).getFields().get(1).getValue(), "https://www.discord.com/channels/" + m.getGuild().getId() + "/" + m.getChannel().getId() + "/" + m.getId())) return;
             }
             EmbedBuilder embed = new EmbedBuilder()
@@ -87,8 +88,9 @@ public class ReactEvent extends ListenerAdapter {
                     .addField("Starred Message", m.getContentDisplay(), false)
                     .addField("Message Link", "https://www.discord.com/channels/" + m.getGuild().getId() + "/" + m.getChannel().getId() + "/" + m.getId(), false)
                     .setTimestamp(Instant.now());
-            if(m.getAttachments().get(0).isImage())
-                embed.setImage(m.getAttachments().get(0).getUrl());
+            if(!m.getAttachments().isEmpty() && m.getAttachments().get(0).isImage())
+                embed.setImage(m.getAttachments().get(0).getUrl())
+                        .addField("","**Attatched Image**", false);
             channel.sendMessageEmbeds(embed.build()).queue();
         }));
     }
