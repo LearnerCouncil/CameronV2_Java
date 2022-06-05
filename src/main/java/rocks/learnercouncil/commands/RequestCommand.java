@@ -68,8 +68,8 @@ public class RequestCommand extends ListenerAdapter {
                     userid = event.getUser().getIdLong();
                     questionNumber = 0;
                     event.getChannel().sendMessageEmbeds(QUESTION_0).setActionRow(
-                            Button.secondary("q0_1", Emoji.fromMarkdown("<:greentick:976577931642040370>")),
-                            Button.secondary("q0_2", Emoji.fromMarkdown("<:redtick:976578391434203207>"))
+                            Button.secondary("q0_1", Emoji.fromUnicode("✅")),
+                            Button.secondary("q0_2", Emoji.fromMarkdown("<:redtick:785223937495531520>"))
                     ).queue(m -> deleteIfNotNull(m, 120));
                 } else
                     event.reply("A request is already in progress, please be patient").setEphemeral(true).queue();
@@ -121,8 +121,8 @@ public class RequestCommand extends ListenerAdapter {
                                     default -> "Unknown: ";
                                 }, answer_4, false)).build())
                         .setActionRow(
-                                Button.secondary("q5_1", Emoji.fromMarkdown("<:greentick:976577931642040370>")),
-                                Button.secondary("q5_2", Emoji.fromMarkdown("<:redtick:976578391434203207>"))
+                                Button.secondary("q5_1", Emoji.fromUnicode("✅")),
+                                Button.secondary("q5_2", Emoji.fromMarkdown("<:redtick:785223937495531520>"))
                         ).queue(m -> deleteIfNotNull(m, 120));
                 event.getHook().deleteOriginal().queue();
             }
@@ -207,8 +207,8 @@ public class RequestCommand extends ListenerAdapter {
                                         default -> "Unknown: ";
                                     }, answer_4, false)).build())
                             .setActionRow(
-                                    Button.secondary("q5_1", Emoji.fromMarkdown("<:greentick:976577931642040370>")),
-                                    Button.secondary("q5_2", Emoji.fromMarkdown("<:redtick:976578391434203207>"))
+                                    Button.secondary("q5_1", Emoji.fromUnicode("✅")),
+                                    Button.secondary("q5_2", Emoji.fromMarkdown("<:redtick:785223937495531520>"))
                             ).queue(m -> deleteIfNotNull(m, 120));
                 }
             }
