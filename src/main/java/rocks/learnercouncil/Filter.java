@@ -1,14 +1,17 @@
 package rocks.learnercouncil;
 
-import kotlin.text.Regex;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.User;
 
 import java.awt.*;
 import java.time.Instant;
-import java.util.*;
-import java.util.regex.Pattern;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Filter {
 
@@ -33,14 +36,14 @@ public class Filter {
     public static void updateList(boolean whitelist, String e, boolean add) {
         if(add) {
             if (whitelist)
-                word_whitelist.add(e);
+                word_whitelist.addAll(Arrays.asList(e.split("\n")));
             else
-                word_blacklist.add(e);
+                word_blacklist.addAll(Arrays.asList(e.split("\n")));
         } else {
             if (whitelist)
-                word_whitelist.remove(e);
+                Arrays.stream(e.split("\n")).forEach(word_whitelist::remove);
             else
-                word_blacklist.remove(e);
+                Arrays.stream(e.split("\n")).forEach(word_blacklist::remove);
         }
     }
     /**
@@ -62,15 +65,14 @@ public class Filter {
     public static boolean isUnsafe(String e) {
         String[] msg = e.toLowerCase().split(" ");
         for(String s : msg) {
-            Cameron.logger.debug("Testing word: " + s);
             for(String b : word_blacklist) {
                 if(s.contains(b)) {
                     Cameron.logger.debug(s + " contains " + b);
                     boolean safe = false;
                     for (String w : word_whitelist) {
-                        String word = w.replaceAll("[\\p{Punct}]", "");
-                        Cameron.logger.debug("Testing word " + s + " against " + word);
-                        if(s.equals(word)) {
+                        String word = s.replaceAll("[\\p{Punct}]", "");
+                        Cameron.logger.debug("Testing word " + word + " against " + w);
+                        if(word.equals(w)) {
                             Cameron.logger.debug("Match");
                             safe = true;
                             break;
