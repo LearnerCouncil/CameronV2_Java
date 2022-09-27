@@ -14,6 +14,7 @@ import rocks.learnercouncil.commands.PronounsCommand;
 
 import java.awt.Color;
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -64,6 +65,8 @@ public class MessageCache extends ListenerAdapter
                     .setColor(Color.YELLOW)
                     .setAuthor(message.getAuthor().getAsTag() + " message got deleted")
                     .addField(new MessageEmbed.Field("Message:", message.getContentDisplay(), false))
+                    .addField(new MessageEmbed.Field("Channel:", event.getChannel().getAsMention(), false))
+                    .addField(new MessageEmbed.Field("Sent:", message.getTimeCreated().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").localizedBy(Locale.US)), false))
                     .setTimestamp(Instant.now())
                     .build()
             ).queue();
@@ -86,6 +89,8 @@ public class MessageCache extends ListenerAdapter
                         .setColor(Color.YELLOW)
                         .setAuthor(message.getAuthor().getAsTag() + " message got deleted")
                         .addField(new MessageEmbed.Field("Message:", message.getContentDisplay(), false))
+                        .addField(new MessageEmbed.Field("Channel:", message.getChannel().getAsMention(), false))
+                        .addField(new MessageEmbed.Field("Sent:", message.getTimeCreated().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")), false))
                         .setTimestamp(Instant.now())
                         .build()
                 ).queue();
@@ -108,6 +113,7 @@ public class MessageCache extends ListenerAdapter
                     .setAuthor(getMessage(event.getMessageId()).getAuthor().getAsTag() + " message got edited")
                     .addField(new MessageEmbed.Field("Original Message:", getMessage(event.getMessageId()).getContentDisplay(), false))
                     .addField(new MessageEmbed.Field("New Message:", event.getMessage().getContentDisplay(), false))
+                    .addField(new MessageEmbed.Field("Channel:", event.getMessage().getChannel().getAsMention(), false))
                     .setTimestamp(Instant.now())
                     .build()
             ).queue();
