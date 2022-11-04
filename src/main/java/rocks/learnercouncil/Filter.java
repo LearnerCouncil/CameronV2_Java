@@ -70,7 +70,7 @@ public class Filter {
                     Cameron.logger.debug(s + " contains " + b);
                     boolean safe = false;
                     for (String w : word_whitelist) {
-                        String word = s.replaceAll("[\\p{Punct}]", "");
+                        String word = s.replaceAll("[\\p{Punct}]", "").replace("…", "");
                         Cameron.logger.debug("Testing word " + word + " against " + w);
                         if(word.equals(w)) {
                             Cameron.logger.debug("Match");
