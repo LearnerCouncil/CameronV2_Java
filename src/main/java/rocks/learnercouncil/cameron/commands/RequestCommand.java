@@ -1,4 +1,4 @@
-package rocks.learnercouncil.commands;
+package rocks.learnercouncil.cameron.commands;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.jetbrains.annotations.NotNull;
+import rocks.learnercouncil.cameron.Cameron;
 
 import java.awt.*;
 import java.nio.file.attribute.UserDefinedFileAttributeView;
@@ -31,11 +32,11 @@ public class RequestCommand extends ListenerAdapter {
     private static final MessageEmbed QUESTION_3A = new EmbedBuilder()
             .setAuthor("Expires in 5 minutes")
             .setColor(Color.CYAN)
-            .setDescription("Please type your parents email address for Village Home.").build();
+            .setDescription("Please type your parents email address.").build();
     private static final MessageEmbed QUESTION_3B = new EmbedBuilder()
             .setAuthor("Expires in 5 minutes")
             .setColor(Color.CYAN)
-            .setDescription("Please type your email address for Village Home.").build();
+            .setDescription("Please type your email address.").build();
     private static final MessageEmbed QUESTION_4A = new EmbedBuilder()
             .setAuthor("Expires in 1 minute")
             .setColor(Color.CYAN)
@@ -47,7 +48,7 @@ public class RequestCommand extends ListenerAdapter {
     private static final MessageEmbed QUESTION_4C = new EmbedBuilder()
             .setAuthor("Expires in 2 minute")
             .setColor(Color.CYAN)
-            .setDescription("Please type your job at Village Home").build();
+            .setDescription("Please type your job at ALP Nature Center and Perserve").build();
     private static final MessageEmbed QUESTION_END = new EmbedBuilder()
             .setAuthor("Expires in 1 minute")
             .setColor(Color.GREEN)
@@ -61,21 +62,22 @@ public class RequestCommand extends ListenerAdapter {
 
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
-        if(event.getName().equals("request")) {
-            if (event.getChannel().getName().equals("rr-1")) {
-                if (questionNumber == -1) {
-                    event.reply("...").queue(m -> m.deleteOriginal().queueAfter(1, TimeUnit.MILLISECONDS));
-                    userid = event.getUser().getIdLong();
-                    questionNumber = 0;
-                    event.getChannel().sendMessageEmbeds(QUESTION_0).setActionRow(
-                            Button.secondary("q0_1", Emoji.fromUnicode("✅")),
-                            Button.secondary("q0_2", Emoji.fromMarkdown("<:redtick:785223937495531520>"))
-                    ).queue(m -> deleteIfNotNull(m, 120));
-                } else
-                    event.reply("A request is already in progress, please be patient").setEphemeral(true).queue();
-            } else
-                event.reply("Can't do that here").setEphemeral(true).queue();
+        if(!event.getName().equals("request")) return;
+        if(!event.getChannel().getName().equals("rr-1")) {
+            event.reply("Can't do that here").setEphemeral(true).queue();
+            return;
         }
+        if(questionNumber != -1) {
+            event.reply("A request is already in progress, please be patient").setEphemeral(true).queue();
+            return;
+        }
+        event.reply("...").queue(m -> m.deleteOriginal().queueAfter(1, TimeUnit.MILLISECONDS));
+        userid = event.getUser().getIdLong();
+        questionNumber = 0;
+        event.getChannel().sendMessageEmbeds(QUESTION_0).setActionRow(
+                Button.secondary("q0_1", Emoji.fromUnicode("✅")),
+                Button.secondary("q0_2", Emoji.fromMarkdown("<:redtick:785223937495531520>"))
+        ).queue(m -> deleteIfNotNull(m, 120));
     }
 
     @Override
@@ -116,7 +118,7 @@ public class RequestCommand extends ListenerAdapter {
                                 .addField(new MessageEmbed.Field(role == "Learner" ? "Parent Email: " : "Email: ", email, false))
                                 .addField(new MessageEmbed.Field(switch (role) {
                                     case "Learner" -> "Age Group: ";
-                                    case "Teacher" -> "Job at Village Home: ";
+                                    case "Teacher" -> "Job at ALPNCP: ";
                                     case "Parent" -> "Child's name(s): ";
                                     default -> "Unknown: ";
                                 }, answer_4, false)).build())
@@ -132,24 +134,23 @@ public class RequestCommand extends ListenerAdapter {
                 event.getHook().deleteOriginal().queue();
                 clearChannel(event.getTextChannel());
                 event.getChannel().sendMessageEmbeds(QUESTION_END).queue(m -> deleteIfNotNull(m, 120));
-                if(event.getUser().getIdLong() == userid) {
-                    User user = event.getUser();
-                    event.getGuild().getTextChannelsByName("request-log", true).get(0).sendMessageEmbeds(
-                            new EmbedBuilder()
-                                    .setAuthor(user.getName() + " made a request to come in.")
-                                    .setColor(Color.BLUE)
-                                    .addField(new MessageEmbed.Field("Rank: ", role, false))
-                                    .addField(new MessageEmbed.Field("Name: ", name, false))
-                                    .addField(new MessageEmbed.Field(role == "Learner" ? "Parent Email: " : "Email: ", email, false))
-                                    .addField(new MessageEmbed.Field(switch (role) {
-                                        case "Learner" -> "Age Group: ";
-                                        case "Teacher" -> "Job at Village Home: ";
-                                        case "Parent" -> "Child's name(s): ";
-                                        default -> "Unknown: ";
-                                        }, answer_4, false))
-                                    .setFooter(user.getName(), user.getEffectiveAvatarUrl()).build()
-                    ).queue();
-                }
+                if(event.getUser().getIdLong() != userid) return;
+                User user = event.getUser();
+                event.getGuild().getTextChannelsByName("request-log", true).get(0).sendMessageEmbeds(new EmbedBuilder()
+                        .setAuthor(user.getName() + " made a request to come in.")
+                        .setColor(Color.BLUE)
+                        .addField(new MessageEmbed.Field("Rank: ", role, false))
+                        .addField(new MessageEmbed.Field("Name: ", name, false))
+                        .addField(new MessageEmbed.Field(role == "Learner" ? "Parent Email: " : "Email: ", email, false))
+                        .addField(new MessageEmbed.Field(switch (role) {
+                            case "Learner" -> "Age Group: ";
+                            case "Teacher" -> "Job at ALPNCP: ";
+                            case "Parent" -> "Child's name(s): ";
+                            default -> "Unknown: ";
+                            }, answer_4, false)
+                        ).setFooter(user.getName(), user.getEffectiveAvatarUrl()).build()
+                ).queue();
+
             }
             case "q5_2" -> {
                 questionNumber = -1;
@@ -165,64 +166,60 @@ public class RequestCommand extends ListenerAdapter {
     }
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
-        if(event.getChannel().getName().equals("rr-1") && event.getAuthor().getIdLong() == userid) {
-            switch (questionNumber) {
-                case 2 -> {
-                    questionNumber = 3;
-                    name = event.getMessage().getContentStripped();
-                    switch (role) {
-                        case "Parent", "Teacher" -> event.getChannel().sendMessageEmbeds(QUESTION_3B).queue(m -> m.delete().queueAfter(300, TimeUnit.SECONDS, m2 -> questionNumber = -1));
-                        default -> event.getChannel().sendMessageEmbeds(QUESTION_3A).queue(m -> m.delete().queueAfter(300, TimeUnit.SECONDS, m2 -> questionNumber = -1));
-                    }
-
-                }
-                case 3 -> {
-                    questionNumber = 4;
-                    email = event.getMessage().getContentStripped();
-                    switch (role) {
-                        case "Teacher" -> event.getChannel().sendMessageEmbeds(QUESTION_4C).queue(m -> deleteIfNotNull(m, 120));
-                        case "Parent" -> event.getChannel().sendMessageEmbeds(QUESTION_4B).queue(m -> deleteIfNotNull(m, 120));
-                        default -> event.getChannel().sendMessageEmbeds(QUESTION_4A)
-                                .setActionRow(
-                                        Button.secondary("q4_1", "6-9"),
-                                        Button.secondary("q4_2", "10-14"),
-                                        Button.secondary("q4_3", "15-18")
-                                ).queue(m -> deleteIfNotNull(m, 120));
-                    }
-                }
-                case 4 -> {
-                    if(role.equals("Learner")) return;
-                    questionNumber = 5;
-                    answer_4 = event.getMessage().getContentStripped();
-                    event.getChannel().sendMessageEmbeds(new EmbedBuilder()
-                                    .setAuthor("Expires in 1 minute")
-                                    .setColor(Color.GREEN)
-                                    .setDescription("This is the information we recieved, is this correct?")
-                                    .addField(new MessageEmbed.Field("Role:  ", role, false))
-                                    .addField(new MessageEmbed.Field("Name: ", name, false))
-                                    .addField(new MessageEmbed.Field("Email: ", email, false))
-                                    .addField(new MessageEmbed.Field(switch (role) {
-                                        case "Teacher" -> "Job at Village Home: ";
-                                        case "Parent" -> "Child's name(s): ";
-                                        default -> "Unknown: ";
-                                    }, answer_4, false)).build())
+        if(!event.getChannel().getName().equals("rr-1") || event.getAuthor().getIdLong() != userid) return;
+        switch (questionNumber) {
+            case 2 -> {
+                questionNumber = 3;
+                name = event.getMessage().getContentStripped();
+                event.getChannel().sendMessageEmbeds(role.equals("Learner") ? QUESTION_3A : QUESTION_3B).queue(m -> m.delete().queueAfter(300, TimeUnit.SECONDS, m2 -> questionNumber = -1, f -> Cameron.logger.info("Message already deleted.")));
+            }
+            case 3 -> {
+                questionNumber = 4;
+                email = event.getMessage().getContentStripped();
+                switch (role) {
+                    case "Teacher" -> event.getChannel().sendMessageEmbeds(QUESTION_4C).queue(m -> deleteIfNotNull(m, 120));
+                    case "Parent" -> event.getChannel().sendMessageEmbeds(QUESTION_4B).queue(m -> deleteIfNotNull(m, 120));
+                    default -> event.getChannel().sendMessageEmbeds(QUESTION_4A)
                             .setActionRow(
-                                    Button.secondary("q5_1", Emoji.fromUnicode("✅")),
-                                    Button.secondary("q5_2", Emoji.fromMarkdown("<:redtick:785223937495531520>"))
+                                    Button.secondary("q4_1", "6-9"),
+                                    Button.secondary("q4_2", "10-14"),
+                                    Button.secondary("q4_3", "15-18")
                             ).queue(m -> deleteIfNotNull(m, 120));
                 }
+            }
+            case 4 -> {
+                if(role.equals("Learner")) return;
+                questionNumber = 5;
+                answer_4 = event.getMessage().getContentStripped();
+                event.getChannel().sendMessageEmbeds(new EmbedBuilder()
+                                .setAuthor("Expires in 1 minute")
+                                .setColor(Color.GREEN)
+                                .setDescription("This is the information we recieved, is this correct?")
+                                .addField(new MessageEmbed.Field("Role:  ", role, false))
+                                .addField(new MessageEmbed.Field("Name: ", name, false))
+                                .addField(new MessageEmbed.Field("Email: ", email, false))
+                                .addField(new MessageEmbed.Field(switch (role) {
+                                    case "Teacher" -> "Job at ALPNCP: ";
+                                    case "Parent" -> "Child's name(s): ";
+                                    default -> "Unknown: ";
+                                    }, answer_4, false)
+                                ).build()
+                        ).setActionRow(
+                                Button.secondary("q5_1", Emoji.fromUnicode("✅")),
+                                Button.secondary("q5_2", Emoji.fromMarkdown("<:redtick:785223937495531520>"))
+                        ).queue(m -> deleteIfNotNull(m, 120));
             }
         }
     }
 
-    public void clearChannel(TextChannel channel) {
+    private void clearChannel(TextChannel channel) {
         for (Message msg : channel.getIterableHistory())
-            msg.delete().queue();
+            msg.delete().queue(s -> {}, e -> Cameron.logger.error("Queue returned failure"));
     }
     
     private void deleteIfNotNull(Message m, int delay) {
         if(m != null)
-            m.delete().queueAfter(delay, TimeUnit.SECONDS, s -> questionNumber = -1, f -> {});
+            m.delete().queueAfter(delay, TimeUnit.SECONDS, s -> questionNumber = -1, f -> Cameron.logger.info("Message already deleted."));
     }
 
 }

@@ -1,4 +1,4 @@
-package rocks.learnercouncil;
+package rocks.learnercouncil.cameron;
 
 
 
@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
-import rocks.learnercouncil.commands.PronounsCommand;
+import rocks.learnercouncil.cameron.commands.PronounsCommand;
 
 import java.awt.Color;
 import java.time.Instant;

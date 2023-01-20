@@ -1,4 +1,4 @@
-package rocks.learnercouncil.events;
+package rocks.learnercouncil.cameron.events;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -8,8 +8,8 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
-import rocks.learnercouncil.Cameron;
-import rocks.learnercouncil.Filter;
+import rocks.learnercouncil.cameron.Cameron;
+import rocks.learnercouncil.cameron.Filter;
 
 import java.awt.*;
 import java.time.Instant;
@@ -49,47 +49,46 @@ public class ReactEvent extends ListenerAdapter {
             Set<String> users = new HashSet<>();
             m.getReactions().forEach(r -> r.retrieveUsers().queue(l -> l.forEach(u -> users.add(u.getAsMention()))));
 
-            if(Filter.isUnsafe(result)) {
-                StringBuilder reactions = new StringBuilder();
-                m.getReactions().forEach(r -> reactions.append(r.getReactionEmote().getEmoji()).append(" "));
-                String link = "https://www.discord.com/channels/" + m.getGuild().getId() + "/" + m.getChannel().getId() + "/" + m.getId();
-                Cameron.getExistingChannel("kinda-sus-log").sendMessageEmbeds(new EmbedBuilder()
-                        .setColor(Color.YELLOW)
-                        .setAuthor("Suspicious sequence of reactions on " + m.getAuthor().getAsTag() + " message")
-                        .setDescription("Do what you want with this information.")
-                        .addField("Message: ", link, false)
-                        .addField(new MessageEmbed.Field("Offenders:", String.join(", ", users), false))
-                        .addField(new MessageEmbed.Field("Reactions:", reactions.toString(), false))
-                        .build()
-                ).queue(message -> message.editMessageEmbeds(new EmbedBuilder()
-                        .setColor(Color.YELLOW)
-                        .setAuthor("Suspicious sequence of reactions on " + m.getAuthor().getAsTag() + " message")
-                        .setDescription("Do what you want with this information.")
-                        .addField("Message: ", link, false)
-                        .addField(new MessageEmbed.Field("Offenders:", String.join(", ", users), false))
-                        .addField(new MessageEmbed.Field("Reactions:", reactions.toString(), false))
-                        .setTimestamp(Instant.now())
-                        .build()).queue());
-            }
+            if(!Filter.isUnsafe(result)) return;
+            StringBuilder reactions = new StringBuilder();
+            m.getReactions().forEach(r -> reactions.append(r.getReactionEmote().getEmoji()).append(" "));
+            String link = "https://www.discord.com/channels/" + m.getGuild().getId() + "/" + m.getChannel().getId() + "/" + m.getId();
+            Cameron.getExistingChannel("kinda-sus-log").sendMessageEmbeds(new EmbedBuilder()
+                    .setColor(Color.YELLOW)
+                    .setAuthor("Suspicious sequence of reactions on " + m.getAuthor().getAsTag() + " message")
+                    .setDescription("Do what you want with this information.")
+                    .addField("Message: ", link, false)
+                    .addField(new MessageEmbed.Field("Offenders:", String.join(", ", users), false))
+                    .addField(new MessageEmbed.Field("Reactions:", reactions.toString(), false))
+                    .build()
+            ).queue(message -> message.editMessageEmbeds(new EmbedBuilder()
+                    .setColor(Color.YELLOW)
+                    .setAuthor("Suspicious sequence of reactions on " + m.getAuthor().getAsTag() + " message")
+                    .setDescription("Do what you want with this information.")
+                    .addField("Message: ", link, false)
+                    .addField(new MessageEmbed.Field("Offenders:", String.join(", ", users), false))
+                    .addField(new MessageEmbed.Field("Reactions:", reactions.toString(), false))
+                    .setTimestamp(Instant.now())
+                    .build()).queue());
         });
     }
 
-    private void addToStarred(Message m, Guild g) {
+    private void addToStarred(Message message, Guild guild) {
         TextChannel channel = Cameron.getExistingChannel("starboard");
-        channel.getIterableHistory().queue(s -> g.retrieveMember(m.getAuthor()).queue(member -> {
-            for(Message msg : s) {
-                if (msg.getEmbeds().isEmpty()) continue;
-                if (msg.getEmbeds().get(0).getFields().size() < 2) continue;
-                if (Objects.equals(msg.getEmbeds().get(0).getFields().get(1).getValue(), "https://www.discord.com/channels/" + m.getGuild().getId() + "/" + m.getChannel().getId() + "/" + m.getId())) return;
+        channel.getIterableHistory().queue(messageHistory -> guild.retrieveMember(message.getAuthor()).queue(member -> {
+            for(Message msg : messageHistory) {
+                if(msg.getEmbeds().isEmpty()) continue;
+                if(msg.getEmbeds().get(0).getFields().size() < 2) continue;
+                if(Objects.equals(msg.getEmbeds().get(0).getFields().get(1).getValue(), "https://www.discord.com/channels/" + message.getGuild().getId() + "/" + message.getChannel().getId() + "/" + message.getId())) return;
             }
             EmbedBuilder embed = new EmbedBuilder()
                     .setColor(Color.YELLOW)
-                    .setAuthor(member.getEffectiveName(), null, m.getAuthor().getEffectiveAvatarUrl())
-                    .addField("Starred Message", m.getContentDisplay(), false)
-                    .addField("Message Link", "https://www.discord.com/channels/" + m.getGuild().getId() + "/" + m.getChannel().getId() + "/" + m.getId(), false)
+                    .setAuthor(member.getEffectiveName(), null, message.getAuthor().getEffectiveAvatarUrl())
+                    .addField("Starred Message", message.getContentDisplay(), false)
+                    .addField("Message Link", "https://www.discord.com/channels/" + message.getGuild().getId() + "/" + message.getChannel().getId() + "/" + message.getId(), false)
                     .setTimestamp(Instant.now());
-            if(!m.getAttachments().isEmpty() && m.getAttachments().get(0).isImage())
-                embed.setImage(m.getAttachments().get(0).getUrl())
+            if(!message.getAttachments().isEmpty() && message.getAttachments().get(0).isImage())
+                embed.setImage(message.getAttachments().get(0).getUrl())
                         .addField("","**Attatched Image**", false);
             channel.sendMessageEmbeds(embed.build()).queue();
         }));

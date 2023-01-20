@@ -1,4 +1,4 @@
-package rocks.learnercouncil;
+package rocks.learnercouncil.cameron;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
@@ -35,12 +35,12 @@ public class Filter {
      */
     public static void updateList(boolean whitelist, String e, boolean add) {
         if(add) {
-            if (whitelist)
+            if(whitelist)
                 word_whitelist.addAll(Arrays.asList(e.split("\n")));
             else
                 word_blacklist.addAll(Arrays.asList(e.split("\n")));
         } else {
-            if (whitelist)
+            if(whitelist)
                 Arrays.stream(e.split("\n")).forEach(word_whitelist::remove);
             else
                 Arrays.stream(e.split("\n")).forEach(word_blacklist::remove);
