@@ -89,7 +89,15 @@ public class Cameron {
                                 new OptionData(OptionType.STRING, "message", "The thing cameron will say", true))
                         .setDefaultEnabled(false),
                 Commands.slash("pronouns", "Set your pronouns"),
-                Commands.slash("whois", "Check the information of a certain user").addOption(OptionType.USER, "user", "The usre to get the information of", true), Commands.slash("report", "Report a user").addOptions(new OptionData(OptionType.USER, "user", "The user you're reporting.", true), new OptionData(OptionType.STRING, "reason", "The reason you're reporting them.", true)), Commands.slash("kick", "Kicks a user").addOptions(new OptionData(OptionType.USER, "user", "the user to kick", true), new OptionData(OptionType.STRING, "reason", "the reason you're kicking them", false)).setDefaultEnabled(false),
+                Commands.slash("whois", "Check the information of a certain user").addOption(OptionType.USER, "user", "The usre to get the information of", true),
+                Commands.slash("report", "Report a user")
+                        .addOptions(
+                                new OptionData(OptionType.USER, "user", "The user you're reporting.", true),
+                                new OptionData(OptionType.STRING, "reason", "The reason you're reporting them.", true)),
+                Commands.slash("kick", "Kicks a user").addOptions(
+                        new OptionData(OptionType.USER, "user", "the user to kick", true),
+                        new OptionData(OptionType.STRING, "reason", "the reason you're kicking them", false))
+                        .setDefaultEnabled(false),
                 Commands.slash("ban", "Kicks a user")
                         .addOptions(
                                 new OptionData(OptionType.USER, "user", "the user to kick", true),
