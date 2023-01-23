@@ -50,6 +50,5 @@ public class WhoisCommand extends ListenerAdapter {
                     }, false)
                 .build()
         ).queue();
-        Cameron.logger.info(member.getOnlineStatus().toString());
     }
 }

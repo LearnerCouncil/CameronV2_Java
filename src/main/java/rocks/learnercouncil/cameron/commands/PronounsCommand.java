@@ -27,14 +27,11 @@ public class PronounsCommand extends ListenerAdapter {
         Cameron.logger.info("Initializing roles");
         pronounRoles.clear();
         if(guild == null) return;
-        Cameron.logger.info("Guild isn't null");
         Cameron.getExistingChannel("pronouns").getIterableHistory().forEach(m -> {
-            Cameron.logger.info("Message: " + m.getContentStripped());
             if(guild.getRolesByName(PREFIX + m.getContentStripped(), true).isEmpty())
                  addPronounRole(guild, PREFIX + m.getContentStripped());
         });
         guild.getRoles().stream().filter(r -> r.getName().startsWith(PREFIX)).forEach(pronounRoles::add);
-        Cameron.logger.info(pronounRoles.toString());
     }
 
     private static boolean matchesAnyInChannel(Role r, MessageChannel channel) {
@@ -51,7 +48,7 @@ public class PronounsCommand extends ListenerAdapter {
             guild.createRole().setName(PREFIX + name).queue(pronounRoles::add);
     }
     public static void removePronounRole(String name, Guild guild) {
-        Cameron.logger.info("Deleting: " + name);
+        Cameron.logger.info("Deleting Pronoun Role: " + name);
         pronounRoles.remove(Cameron.getExistingRole(PREFIX + name));
         Cameron.getExistingRole(PREFIX + name).delete().queue();
     }
@@ -60,17 +57,14 @@ public class PronounsCommand extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         if(!event.getName().equals("pronouns")) return;
-        Cameron.logger.info("Command Executed");
         if(!event.isFromGuild()) {
             event.reply("This command must be run from inside a server").queue();
             return;
         }
-        Cameron.logger.info("Command is from guild");
         event.deferReply().setEphemeral(true).queue();
         if(pronounRoles.isEmpty()) {
             initializeRoles(event.getGuild());
         }
-        Cameron.logger.info("Pronouns: " + pronounRoles);
         MessageEmbed embed = new EmbedBuilder()
                 .setColor(Color.GREEN)
                 .setAuthor("Set your pronouns! (Select all that apply.)")
