@@ -43,7 +43,7 @@ public class ReactEvent extends ListenerAdapter {
         event.retrieveMessage().queue(m -> {
 
             StringBuilder sb = new StringBuilder();
-            m.getReactions().forEach(r -> sb.append(dictionary.getOrDefault(r.getReactionEmote().getEmoji(), '-')));
+            m.getReactions().forEach(r -> sb.append(dictionary.getOrDefault(r.getReactionEmote().isEmoji() ? r.getReactionEmote().getEmoji() : '-', '-')));
             String result = sb.toString().replaceAll("-", "");
 
             Set<String> users = new HashSet<>();
