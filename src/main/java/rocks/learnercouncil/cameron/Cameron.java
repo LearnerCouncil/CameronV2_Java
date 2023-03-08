@@ -107,14 +107,6 @@ public class Cameron {
                 Commands.slash("joinlist", "Request access to the Minecraft Server")
                         .addOption(OptionType.STRING, "username", "Your Minecraft username", true)
         ).queue(c -> logger.info("Loaded Commands"));
-        guild.loadMembers().onSuccess(l -> {
-            logger.info("Loaded Members");
-            Role pronounListRole = Cameron.getExistingRole("----------------  Pronouns ----------------");
-            for(Member m : l) {
-                if(m.getRoles().contains(pronounListRole) || m.getUser().isBot()) continue;
-                guild.addRoleToMember(m, pronounListRole).queue();
-            }
-        });
     }
 
     /**

@@ -8,17 +8,17 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public class DynamicRoleList {
 
     private final List<Role> roles = new LinkedList<>();
     private final Guild guild;
+    private final Role indicatorRole;
     public final TextChannel channel;
 
-    public DynamicRoleList(Guild guild, TextChannel channel) {
+    public DynamicRoleList(Guild guild, String indicatorRole, TextChannel channel) {
         this.guild = guild;
+        this.indicatorRole = Cameron.getExistingRole(indicatorRole);
         this.channel = channel;
         this.channel.getIterableHistory().forEach(message -> {
             String[] lines = message.getContentRaw().split("\n");
@@ -42,6 +42,14 @@ public class DynamicRoleList {
 
     public Role get(String name) {
         return roles.stream().filter(r -> r.getName().equals(name)).findAny().orElseThrow(() -> new IllegalArgumentException("No role called '" + name + "' exists in this list."));
+    }
+
+    public void updateIndicator(Member member) {
+        if(member.getRoles().stream().anyMatch(roles::contains)) {
+            guild.addRoleToMember(member, indicatorRole).queue();
+        } else {
+            guild.removeRoleFromMember(member, indicatorRole).queue();
+        }
     }
 
     public ActionRow[] getButtons(Member member) {

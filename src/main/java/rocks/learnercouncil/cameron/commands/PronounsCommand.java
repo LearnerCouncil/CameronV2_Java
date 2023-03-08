@@ -12,10 +12,8 @@ import org.jetbrains.annotations.NotNull;
 import rocks.learnercouncil.cameron.Cameron;
 import rocks.learnercouncil.cameron.DynamicRoleList;
 
-import javax.swing.undo.AbstractUndoableEdit;
 import java.awt.Color;
 import java.util.*;
-import java.util.List;
 
 public class PronounsCommand extends ListenerAdapter {
 
@@ -23,16 +21,15 @@ public class PronounsCommand extends ListenerAdapter {
     private static final MessageEmbed PRONOUN_EMBED = new EmbedBuilder()
             .setColor(Color.GREEN)
             .setAuthor("Set your pronouns! (Select all that apply.)")
-            .setDescription("Choose from the list below.\n(If your pronouns are not on this list please @The Council with your \npronouns and someone will add them to the list.)"
-            ).build();
-
-    private static final List<Role> pronounRoles = new ArrayList<>();
+            .setDescription("Choose from the list below.\n(If your pronouns are not on this list please @The Council with your \npronouns and someone will add them to the list.)")
+            .build();
     public static DynamicRoleList roleList;
     private static ActionRow[] buttonRows;
 
     public static void initialize(@NotNull Guild guild) {
-        roleList = new DynamicRoleList(guild, Cameron.getExistingChannel("pronouns"));
+        roleList = new DynamicRoleList(guild, "--------------  Pronouns --------------", Cameron.getExistingChannel("pronouns"));
     }
+
 
     @SuppressWarnings("ConstantConditions")
     @Override
@@ -64,10 +61,10 @@ public class PronounsCommand extends ListenerAdapter {
 
             if(button.getStyle() == ButtonStyle.PRIMARY) {
                 row.updateComponent(button, event.getComponent().withStyle(ButtonStyle.SECONDARY));
-                guild.removeRoleFromMember(event.getMember(), roleList.get(event.getComponent().getLabel())).queue();
+                guild.removeRoleFromMember(event.getMember(), roleList.get(event.getComponent().getLabel())).queue(r -> roleList.updateIndicator(event.getMember()));
             } else {
                 row.updateComponent(button, event.getComponent().withStyle(ButtonStyle.PRIMARY));
-                guild.addRoleToMember(event.getMember(), roleList.get(event.getComponent().getLabel())).queue();
+                guild.addRoleToMember(event.getMember(), roleList.get(event.getComponent().getLabel())).queue(r -> roleList.updateIndicator(event.getMember()));
             }
         }
         event.deferEdit().setActionRows(buttonRows).queue();
