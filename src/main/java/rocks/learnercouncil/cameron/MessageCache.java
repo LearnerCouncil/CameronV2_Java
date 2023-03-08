@@ -76,7 +76,7 @@ public class MessageCache extends ListenerAdapter
             else if(event.getChannel().getName().equals("word-whitelist"))
                 Filter.updateList(true, message.getContentStripped(), false);
             else if(event.getChannel().getName().equals("pronouns"))
-                PronounsCommand.removePronounRole(message.getContentStripped(), event.getGuild());
+                PronounsCommand.roleList.remove(message.getContentStripped());
         }
         messageMap.remove(event.getMessageId());
     }
@@ -95,12 +95,13 @@ public class MessageCache extends ListenerAdapter
                         .build()
                 ).queue();
 
-                if(event.getChannel().getName().equals("word-blacklist"))
+                String channelName = event.getChannel().getName();
+                if(channelName.equals("word-blacklist"))
                     Filter.updateList(false, message.getContentStripped(), false);
-                else if(event.getChannel().getName().equals("word-whitelist"))
+                else if(channelName.equals("word-whitelist"))
                     Filter.updateList(true, message.getContentStripped(), false);
-                else if(event.getChannel().getName().equals("pronouns"))
-                    PronounsCommand.removePronounRole(message.getContentStripped(), event.getGuild());
+                else if(channelName.equals(PronounsCommand.roleList.channel.getName()))
+                    PronounsCommand.roleList.remove(message.getContentStripped());
             }
         });
         event.getMessageIds().forEach(messageMap.keySet()::remove);

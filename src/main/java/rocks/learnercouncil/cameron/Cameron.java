@@ -22,7 +22,7 @@ import java.util.List;
 
 public class Cameron {
 
-    //Current guild (Server) ID, Set by the second command-line argument.
+    //Current guild (Server), Set by the second command-line argument.
     private static Guild guild;
 
     private static JDA jda;
@@ -71,7 +71,7 @@ public class Cameron {
         if(guild == null) throw new IllegalArgumentException("Invalid guild ID.");
 
         Filter.initializeLists();
-        PronounsCommand.initializeRoles(guild);
+        PronounsCommand.initialize(guild);
         Cameron.logger.info("Found Guild: " + guild.getName());
         MessageCache.initializeMessages(guild);
         //Global commands don't seem to work, even after waiting for the alotted time, so for the time being I'm sticking to guild commands.
