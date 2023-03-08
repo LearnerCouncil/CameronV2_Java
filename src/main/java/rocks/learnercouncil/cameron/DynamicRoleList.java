@@ -8,35 +8,24 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class DynamicRoleList {
 
     private final List<Role> roles = new LinkedList<>();
-    public List<Role> getRoles() {
-        return roles;
-    }
     private final Guild guild;
     public final TextChannel channel;
 
     public DynamicRoleList(Guild guild, TextChannel channel) {
         this.guild = guild;
         this.channel = channel;
-        convertLegacy();
         this.channel.getIterableHistory().forEach(message -> {
             String[] lines = message.getContentRaw().split("\n");
             for(String line : lines) {
                 add(line);
             }
         });
-    }
-
-    private void convertLegacy() {
-        Set<Role> legacyRoles = guild.getRoles().stream().filter(r -> r.getName().startsWith("\u200B")).collect(Collectors.toSet());
-        if(legacyRoles.size() < 1) return;
-        for(Role role : legacyRoles) {
-            role.getManager().setName(role.getName().substring(1)).queue();
-        }
     }
 
     public void add(String name) {
