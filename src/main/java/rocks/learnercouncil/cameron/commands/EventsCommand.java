@@ -17,8 +17,8 @@ public class EventsCommand extends ListenerAdapter {
 
     private static final MessageEmbed EVENT_EMBED = new EmbedBuilder()
             .setColor(Color.GREEN)
-            .setAuthor("Set your event pings! (Select all that apply.)")
-            .setDescription("Choose from the list below. Selecting an event means you will be pinged once it starts.")
+            .setAuthor("Set your event pings!")
+            .setDescription("If you would like to get a ping for an event each time it is about to happen, choose it below. (You can select as many as you want, and you will be pinged for each one).")
             .build();
     public static DynamicRoleList roleList;
     private static ActionRow[] buttonRows;
