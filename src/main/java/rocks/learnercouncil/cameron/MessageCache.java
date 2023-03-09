@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
+import rocks.learnercouncil.cameron.commands.EventsCommand;
 import rocks.learnercouncil.cameron.commands.PronounsCommand;
 
 import java.awt.Color;
@@ -71,12 +72,15 @@ public class MessageCache extends ListenerAdapter
                     .build()
             ).queue();
 
-            if(event.getChannel().getName().equals("word-blacklist"))
+            String channelName = event.getChannel().getName();
+            if(channelName.equals("word-blacklist"))
                 Filter.updateList(false, message.getContentStripped(), false);
-            else if(event.getChannel().getName().equals("word-whitelist"))
+            else if(channelName.equals("word-whitelist"))
                 Filter.updateList(true, message.getContentStripped(), false);
-            else if(event.getChannel().getName().equals("pronouns"))
-                PronounsCommand.removePronounRole(message.getContentStripped(), event.getGuild());
+            else if(channelName.equals(PronounsCommand.roleList.channel.getName()))
+                PronounsCommand.roleList.remove(message.getContentStripped());
+            else if(channelName.equals(EventsCommand.roleList.channel.getName()))
+                EventsCommand.roleList.remove(message.getContentStripped());
         }
         messageMap.remove(event.getMessageId());
     }
@@ -95,12 +99,15 @@ public class MessageCache extends ListenerAdapter
                         .build()
                 ).queue();
 
-                if(event.getChannel().getName().equals("word-blacklist"))
+                String channelName = event.getChannel().getName();
+                if(channelName.equals("word-blacklist"))
                     Filter.updateList(false, message.getContentStripped(), false);
-                else if(event.getChannel().getName().equals("word-whitelist"))
+                else if(channelName.equals("word-whitelist"))
                     Filter.updateList(true, message.getContentStripped(), false);
-                else if(event.getChannel().getName().equals("pronouns"))
-                    PronounsCommand.removePronounRole(message.getContentStripped(), event.getGuild());
+                else if(channelName.equals(PronounsCommand.roleList.channel.getName()))
+                    PronounsCommand.roleList.remove(message.getContentStripped());
+                else if(channelName.equals(EventsCommand.roleList.channel.getName()))
+                    EventsCommand.roleList.remove(message.getContentStripped());
             }
         });
         event.getMessageIds().forEach(messageMap.keySet()::remove);

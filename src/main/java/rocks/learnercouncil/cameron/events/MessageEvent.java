@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 import rocks.learnercouncil.cameron.Cameron;
 import rocks.learnercouncil.cameron.Filter;
+import rocks.learnercouncil.cameron.commands.EventsCommand;
 import rocks.learnercouncil.cameron.commands.PronounsCommand;
 
 import java.awt.*;
@@ -29,7 +30,9 @@ public class MessageEvent extends ListenerAdapter {
         else if(channel.getName().equals("word-whitelist"))
             Filter.updateList(true, event.getMessage().getContentStripped(), true);
         else if(channel.getName().equals("pronouns"))
-            PronounsCommand.addPronounRole(event.getGuild(), message.getContentStripped());
+            PronounsCommand.roleList.add(message.getContentStripped());
+        else if(channel.getName().equals("event-pings"))
+            EventsCommand.roleList.add(message.getContentStripped());
         else if(channel.getName().equals("rr-1"))
             return;
         if(event.getMember().hasPermission(Permission.VIEW_AUDIT_LOGS)) return;
