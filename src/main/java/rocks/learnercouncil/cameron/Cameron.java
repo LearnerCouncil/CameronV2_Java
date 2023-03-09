@@ -47,6 +47,7 @@ public class Cameron {
                         new RpsCommand(),
                         new SayCommand(),
                         new PronounsCommand(),
+                        new EventsCommand(),
                         new WhoisCommand(),
                         new ReportCommand(),
                         new KickCommand(),
@@ -72,6 +73,7 @@ public class Cameron {
 
         Filter.initializeLists();
         PronounsCommand.initialize(guild);
+        EventsCommand.initialize(guild);
         Cameron.logger.info("Found Guild: " + guild.getName());
         MessageCache.initializeMessages(guild);
         //Global commands don't seem to work, even after waiting for the alotted time, so for the time being I'm sticking to guild commands.
@@ -89,6 +91,7 @@ public class Cameron {
                                 new OptionData(OptionType.STRING, "message", "The thing cameron will say", true))
                         .setDefaultEnabled(false),
                 Commands.slash("pronouns", "Set your pronouns"),
+                Commands.slash("events", "Set which events you'd like to be pinged for"),
                 Commands.slash("whois", "Check the information of a certain user").addOption(OptionType.USER, "user", "The usre to get the information of", true),
                 Commands.slash("report", "Report a user")
                         .addOptions(

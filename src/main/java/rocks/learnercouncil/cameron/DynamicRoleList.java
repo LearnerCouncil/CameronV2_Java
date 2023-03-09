@@ -4,8 +4,10 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 
 import java.util.*;
 
@@ -52,16 +54,16 @@ public class DynamicRoleList {
         }
     }
 
-    public ActionRow[] getButtons(Member member) {
+    public ActionRow[] getButtons(Member member, String prefix) {
         ActionRow[] result;
 
         Button[] buttons = new Button[roles.size()];
         for(int i = 0; i < buttons.length; i++) {
             Role role = roles.get(i);
             if(member.getRoles().contains(role))
-                buttons[i] = Button.primary("pncb_" + role.getName(), role.getName());
+                buttons[i] = Button.primary(prefix + "_rlb_" + role.getName(), role.getName());
             else
-                buttons[i] = Button.secondary("pncb_" + role.getName(), role.getName());
+                buttons[i] = Button.secondary(prefix + "_rlb_" + role.getName(), role.getName());
         }
         Button[][] rows = splitArray(buttons);
         result = new ActionRow[rows.length];
@@ -72,6 +74,23 @@ public class DynamicRoleList {
             }
         }
         return result;
+    }
+
+    public void updateButtons(ActionRow[] buttonRows, ButtonInteractionEvent event) {
+        for(ActionRow row : buttonRows) {
+            Optional<Button> buttonOptional = row.getButtons().stream().filter(b -> Objects.equals(b.getId(), event.getComponentId())).findAny();
+            if(buttonOptional.isEmpty()) continue;
+            Button button = buttonOptional.get();
+            Member member = Objects.requireNonNull(event.getMember());
+
+            if(button.getStyle() == ButtonStyle.PRIMARY) {
+                row.updateComponent(button, event.getComponent().withStyle(ButtonStyle.SECONDARY));
+                guild.removeRoleFromMember(member, get(event.getComponent().getLabel())).queue(r -> updateIndicator(event.getMember()));
+            } else {
+                row.updateComponent(button, event.getComponent().withStyle(ButtonStyle.PRIMARY));
+                guild.addRoleToMember(member, get(event.getComponent().getLabel())).queue(r -> updateIndicator(event.getMember()));
+            }
+        }
     }
 
     private Button[][] splitArray(Button[] input) {

@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
+import rocks.learnercouncil.cameron.commands.EventsCommand;
 import rocks.learnercouncil.cameron.commands.PronounsCommand;
 
 import java.awt.Color;
@@ -77,6 +78,8 @@ public class MessageCache extends ListenerAdapter
                 Filter.updateList(true, message.getContentStripped(), false);
             else if(event.getChannel().getName().equals("pronouns"))
                 PronounsCommand.roleList.remove(message.getContentStripped());
+            else if(event.getChannel().getName().equals("event-pings"))
+                EventsCommand.roleList.remove(message.getContentStripped());
         }
         messageMap.remove(event.getMessageId());
     }
