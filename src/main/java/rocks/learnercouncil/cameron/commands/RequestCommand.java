@@ -82,6 +82,10 @@ public class RequestCommand extends ListenerAdapter {
 
     @Override
     public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
+        if(event.getUser().getIdLong() != userid) {
+            event.reply("A request is already in progress, please be patient").setEphemeral(true).queue();
+            return;
+        }
         switch (event.getComponentId()) {
             case "q0_1" -> {
                 event.deferEdit().queue();
@@ -112,7 +116,7 @@ public class RequestCommand extends ListenerAdapter {
                 event.getChannel().sendMessageEmbeds(new EmbedBuilder()
                                 .setAuthor("Expires in 1 minute")
                                 .setColor(Color.GREEN)
-                                .setDescription("This is the information we recieved, is this correct?")
+                                .setDescription("This is the information we received, is this correct?")
                                 .addField(new MessageEmbed.Field("Rank: ", role, false))
                                 .addField(new MessageEmbed.Field("Name: ", name, false))
                                 .addField(new MessageEmbed.Field(role == "Learner" ? "Parent Email: " : "Email: ", email, false))
@@ -166,7 +170,16 @@ public class RequestCommand extends ListenerAdapter {
     }
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
-        if(!event.getChannel().getName().equals("rr-1") || event.getAuthor().getIdLong() != userid) return;
+        if(!event.getChannel().getName().equals("rr-1")) return;
+        if(event.getMessage().getContentStripped().equalsIgnoreCase("/request") && questionNumber == -1) {
+            userid = event.getMessage().getAuthor().getIdLong();
+            questionNumber = 0;
+            event.getChannel().sendMessageEmbeds(QUESTION_0).setActionRow(
+                    Button.secondary("q0_1", Emoji.fromUnicode("✅")),
+                    Button.secondary("q0_2", Emoji.fromMarkdown("<:redtick:785223937495531520>"))
+            ).queue(m -> deleteIfNotNull(m, 120));
+        }
+        if(event.getAuthor().getIdLong() != userid) return;
         switch (questionNumber) {
             case 2 -> {
                 questionNumber = 3;
@@ -181,9 +194,9 @@ public class RequestCommand extends ListenerAdapter {
                     case "Parent" -> event.getChannel().sendMessageEmbeds(QUESTION_4B).queue(m -> deleteIfNotNull(m, 120));
                     default -> event.getChannel().sendMessageEmbeds(QUESTION_4A)
                             .setActionRow(
-                                    Button.secondary("q4_1", "6-9"),
-                                    Button.secondary("q4_2", "10-14"),
-                                    Button.secondary("q4_3", "15-18")
+                                    Button.secondary("q4_1", "9-11"),
+                                    Button.secondary("q4_2", "12-13"),
+                                    Button.secondary("q4_3", "14+")
                             ).queue(m -> deleteIfNotNull(m, 120));
                 }
             }

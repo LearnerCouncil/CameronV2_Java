@@ -28,12 +28,6 @@ public class Cameron {
     private static JDA jda;
     public static final Logger logger = LoggerFactory.getLogger("rocks.learnercouncil.cameron.Cameron");
 
-    /**
-     * The main method, it fires once the program starts up.
-     * @param args Console arguments, the first one must be the bot token, the rest are ignored.
-     * @throws InterruptedException If the JDA instance ever gets interrupted.
-     * @throws LoginException I assume in case an invalid token is supplied.
-     */
     public static void main(String[] args) throws InterruptedException, LoginException {
         logger.debug("Starting bot...");
         if(args.length <= 1)
