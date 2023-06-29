@@ -82,7 +82,7 @@ public class RequestCommand extends ListenerAdapter {
 
     @Override
     public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
-        if(event.getUser().getIdLong() != userid) {
+        if(event.getUser().getIdLong() != userid && event.getComponentId().startsWith("q")) {
             event.reply("A request is already in progress, please be patient").setEphemeral(true).queue();
             return;
         }

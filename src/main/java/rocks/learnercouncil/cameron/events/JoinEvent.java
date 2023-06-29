@@ -14,7 +14,6 @@ public class JoinEvent extends ListenerAdapter {
     @Override
     public void onGuildMemberJoin(@NotNull GuildMemberJoinEvent event) {
         event.getGuild().addRoleToMember(event.getMember(), Cameron.getExistingRole("Waiting")).queue();
-        event.getGuild().addRoleToMember(event.getMember(), Cameron.getExistingRole("----------------  Pronouns ----------------")).queue();
         Cameron.getExistingChannel("rr-1").sendMessage("Hello " + event.getMember().getAsMention() + "! Type **/request** to begin.").queue();
         Member m = event.getMember();
         Cameron.getExistingChannel("member-log").sendMessageEmbeds(new EmbedBuilder()
