@@ -1,4 +1,4 @@
-package rocks.learnercouncil.cameron.commands;
+package rocks.learnercouncil.cameron.commands.request;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
@@ -14,8 +14,20 @@ import java.awt.*;
 import java.util.concurrent.TimeUnit;
 
 public class RequestCommand extends ListenerAdapter {
-
-
+    @Override
+    public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
+        if(!event.getChannel().getName().equals("rr-1")) {
+            event.reply("Can't do that here").setEphemeral(true).queue();
+            return;
+        }
+        if(Request.exists()) {
+            event.reply("A request is already in progress, please be patient.");
+            return;
+        }
+        event.reply("Processing Request...").queue(m -> m.deleteOriginal().queueAfter(1, TimeUnit.MILLISECONDS));
+        new Request(event.getUser().getIdLong(), event.getChannel());
+    }
+    /*
     private static final MessageEmbed CONFIRM_QUESTION = new EmbedBuilder()
             .setAuthor("Expires in 1 minute")
             .setColor(Color.GREEN)
@@ -230,5 +242,5 @@ public class RequestCommand extends ListenerAdapter {
         if(m != null)
             m.delete().queueAfter(delay, TimeUnit.SECONDS, s -> questionNumber = -1, f -> Cameron.logger.info("Message already deleted."));
     }
-
+*/
 }

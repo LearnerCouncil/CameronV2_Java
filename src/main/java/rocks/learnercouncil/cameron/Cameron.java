@@ -12,6 +12,8 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rocks.learnercouncil.cameron.commands.*;
+import rocks.learnercouncil.cameron.commands.request.Questions;
+import rocks.learnercouncil.cameron.commands.request.RequestCommand;
 import rocks.learnercouncil.cameron.events.EditEvent;
 import rocks.learnercouncil.cameron.events.JoinEvent;
 import rocks.learnercouncil.cameron.events.MessageEvent;
@@ -53,6 +55,9 @@ public class Cameron {
                         new ReactEvent(),
                         new MessageCache(),
                         new JoinEvent()
+                )
+                .addEventListeners(
+                        Questions.getListeners()
                 )
                 .enableIntents(
                         GatewayIntent.GUILD_MESSAGE_REACTIONS,
