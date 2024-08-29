@@ -19,8 +19,9 @@ public class EndQuestion implements Question {
 
     @Override
     public void display(Request request) {
-        request.getChannel().sendMessageEmbeds(embed).queue(m -> m.delete().queueAfter(expirationDelay.getSeconds(), TimeUnit.SECONDS));
         request.cancel(true);
+        request.getChannel().sendMessageEmbeds(embed).queue(m -> m.delete().queueAfter(expirationDelay.getSeconds(), TimeUnit.SECONDS));
+        request.sendLogEmbed();
     }
     
     @Override

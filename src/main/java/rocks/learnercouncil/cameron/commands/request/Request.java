@@ -1,9 +1,8 @@
 package rocks.learnercouncil.cameron.commands.request;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import rocks.learnercouncil.cameron.commands.request.questions.MessageQuestion;
+import net.dv8tion.jda.api.entities.*;
+import rocks.learnercouncil.cameron.Cameron;
 import rocks.learnercouncil.cameron.commands.request.questions.Question;
 
 import java.awt.*;
@@ -73,6 +72,16 @@ public class Request {
     public void addAnswers(EmbedBuilder embed) {
         answers.keySet().forEach(answer -> embed.addField(answer.displayName + ": ", answers.get(answer), false));
     }
+    
+    public void sendLogEmbed() {
+        User user = Objects.requireNonNull(Cameron.getJDA().getUserById(requesterId));
+        EmbedBuilder embedBuilder = new EmbedBuilder()
+                .setAuthor(user.getName() + " made a request to come in.")
+                .setColor(Color.BLUE)
+                .setFooter(user.getName(), user.getEffectiveAvatarUrl());
+        addAnswers(embedBuilder);
+        Cameron.getExistingChannel("request-log").sendMessageEmbeds(embedBuilder.build()).queue();
+    }
 
     public void expireMessage(Message message, Duration delay) {
         if(message != null)
@@ -81,6 +90,7 @@ public class Request {
 
     public void cancel(boolean silent) {
         activeRequests.remove(this.requesterId);
+        channel.purgeMessages(channel.getIterableHistory().stream().toList());
         if(!silent)
             channel.sendMessageEmbeds(new EmbedBuilder()
                     .setAuthor("Expires in 1 minute")
